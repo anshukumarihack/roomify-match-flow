@@ -4,8 +4,9 @@ import RoommateCard, { RoommateProfile } from './RoommateCard';
 import { Button } from '@/components/ui/button';
 import { X, Heart, Sparkles } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
-// Mock data for roommate profiles
+// Enhanced mock data for roommate profiles with avatar URLs
 const mockProfiles: RoommateProfile[] = [
   {
     id: '1',
@@ -20,8 +21,9 @@ const mockProfiles: RoommateProfile[] = [
     smoking: 'non-smoker',
     pets: 'no-pets',
     dietaryPreferences: ['vegetarian'],
-    photoUrls: ['', '', ''], // Empty strings will use placeholder images
-    xpValue: 10
+    photoUrls: ['', '', ''],
+    xpValue: 10,
+    avatarUrl: 'https://source.unsplash.com/random/400x400?woman&1'
   },
   {
     id: '2',
@@ -37,7 +39,8 @@ const mockProfiles: RoommateProfile[] = [
     pets: 'has-pets',
     dietaryPreferences: ['omnivore'],
     photoUrls: ['', ''],
-    xpValue: 10
+    xpValue: 10,
+    avatarUrl: 'https://source.unsplash.com/random/400x400?man&2'
   },
   {
     id: '3',
@@ -53,7 +56,8 @@ const mockProfiles: RoommateProfile[] = [
     pets: 'no-pets',
     dietaryPreferences: ['vegan'],
     photoUrls: ['', '', '', ''],
-    xpValue: 10
+    xpValue: 10,
+    avatarUrl: 'https://source.unsplash.com/random/400x400?woman&3'
   },
   {
     id: '4',
@@ -69,7 +73,8 @@ const mockProfiles: RoommateProfile[] = [
     pets: 'planning-pets',
     dietaryPreferences: ['keto'],
     photoUrls: ['', ''],
-    xpValue: 10
+    xpValue: 10,
+    avatarUrl: 'https://source.unsplash.com/random/400x400?man&4'
   },
   {
     id: '5',
@@ -85,7 +90,8 @@ const mockProfiles: RoommateProfile[] = [
     pets: 'has-pets',
     dietaryPreferences: ['vegetarian'],
     photoUrls: ['', '', ''],
-    xpValue: 10
+    xpValue: 10,
+    avatarUrl: 'https://source.unsplash.com/random/400x400?woman&5'
   }
 ];
 
@@ -108,6 +114,62 @@ const SwipeInterface: React.FC<SwipeInterfaceProps> = ({ onMatch, onGainXP }) =>
       setCurrentProfile(profiles[0]);
     }
   }, [profiles, currentProfile]);
+
+  // Optional: Load profiles from Supabase
+  const fetchMatchesFromSupabase = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('match')
+        .select('*')
+        .limit(10);
+        
+      if (error) throw error;
+      
+      if (data && data.length > 0) {
+        // Map Supabase match data to RoommateProfile format
+        const mappedProfiles: RoommateProfile[] = data.map(match => ({
+          id: match.id.toString(),
+          name: match.name || 'Unknown',
+          age: Math.floor(Math.random() * 10) + 22, // Random age between 22-32
+          occupation: getRandomOccupation(),
+          bio: match.interests || 'No bio available',
+          distance: Math.floor(Math.random() * 10) + 1, // Random distance 1-10 miles
+          compatibility: Math.floor(Math.random() * 30) + 70, // Random compatibility 70-100%
+          sleepSchedule: convertSleepTime(match.sleep_time),
+          cleanliness: match.cleanliness || 3,
+          smoking: 'non-smoker',
+          pets: Math.random() > 0.5 ? 'has-pets' : 'no-pets',
+          dietaryPreferences: [match.food || 'omnivore'],
+          photoUrls: [''],
+          xpValue: 10,
+          avatarUrl: `https://source.unsplash.com/random/400x400?person&${match.id}`
+        }));
+        
+        setProfiles(mappedProfiles);
+      }
+    } catch (error) {
+      console.error('Error fetching matches:', error);
+      // Fallback to mock data
+      setProfiles(mockProfiles);
+    }
+  };
+
+  // Helper functions for mapping Supabase data
+  const convertSleepTime = (sleepTime: number | null): string => {
+    if (!sleepTime) return 'mixed';
+    if (sleepTime <= 2) return 'night-owl';
+    if (sleepTime >= 4) return 'early-bird';
+    return 'mixed';
+  };
+
+  const getRandomOccupation = (): string => {
+    const occupations = [
+      'Software Developer', 'Marketing Manager', 'Teacher', 'Nurse', 
+      'Graphic Designer', 'UX Designer', 'Data Analyst', 'Financial Advisor',
+      'Student', 'Freelancer', 'Entrepreneur'
+    ];
+    return occupations[Math.floor(Math.random() * occupations.length)];
+  };
 
   const handleSwipe = (direction: 'left' | 'right', profile: RoommateProfile) => {
     // Track that user swiped and award XP
@@ -185,6 +247,11 @@ const SwipeInterface: React.FC<SwipeInterfaceProps> = ({ onMatch, onGainXP }) =>
     }
   };
 
+  // Attempt to load matches from Supabase when component mounts
+  useEffect(() => {
+    fetchMatchesFromSupabase();
+  }, []);
+
   return (
     <div className="flex flex-col items-center justify-center h-full p-4 relative">
       {isLoading ? (
@@ -237,7 +304,7 @@ const SwipeInterface: React.FC<SwipeInterfaceProps> = ({ onMatch, onGainXP }) =>
           <h2 className="text-2xl font-semibold text-roomify-purple mb-2">No More Profiles</h2>
           <p className="text-gray-600 mb-6">Check back later for more potential roommates!</p>
           <Button 
-            onClick={() => setProfiles(mockProfiles)} 
+            onClick={() => fetchMatchesFromSupabase()} 
             className="bg-roomify-primary hover:bg-roomify-purple-dark"
           >
             Refresh Profiles

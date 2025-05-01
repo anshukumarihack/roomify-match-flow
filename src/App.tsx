@@ -17,6 +17,7 @@ import BadgesPage from "./pages/BadgesPage";
 import MatchesPage from "./pages/MatchesPage";
 import MessagesPage from "./pages/MessagesPage";
 import MessageDetailPage from "./pages/MessageDetailPage";
+import AboutPage from "./pages/AboutPage";
 import AppLayout from "./layouts/AppLayout";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/create-profile" element={<ProfileCreationPage />} />
+          <Route path="/about" element={<AboutPage />} />
           
           {/* Protected routes with AppLayout */}
           <Route path="/" element={<AppLayout />}>

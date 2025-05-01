@@ -3,11 +3,31 @@ import React from 'react';
 import SwipeInterface from '@/components/swipe/SwipeInterface';
 import { RoommateProfile } from '@/components/swipe/RoommateCard';
 import { toast } from '@/components/ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const SwipePage: React.FC = () => {
-  const handleMatch = (profile: RoommateProfile) => {
-    // In a real app, this would call an API to record the match
+  const handleMatch = async (profile: RoommateProfile) => {
+    // Record the match in history
     console.log('Match with:', profile);
+    
+    // In a real app with authentication, you'd record this in Supabase
+    try {
+      const { data, error } = await supabase
+        .from('user_activity')
+        .insert([
+          {
+            user_id: '00000000-0000-0000-0000-000000000000', // This would be the actual user ID
+            activity_type: 'match',
+            details: { matched_with: profile.id, name: profile.name }
+          }
+        ]);
+        
+      if (error) {
+        console.error('Error recording match:', error);
+      }
+    } catch (error) {
+      console.error('Error recording match activity:', error);
+    }
   };
 
   const handleGainXP = (amount: number) => {
