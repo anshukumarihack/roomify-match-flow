@@ -20,7 +20,7 @@ const initialConversations: Conversation[] = [
     id: '1',
     name: 'Emma Wilson',
     photoUrl: 'https://source.unsplash.com/random/200x200?portrait&woman&1',
-    lastMessage: 'I'm looking at downtown or the university area. My budget is around $800/month for my share.',
+    lastMessage: "I'm looking at downtown or the university area. My budget is around $800/month for my share.",
     timestamp: new Date(Date.now() - 72000000),
     unreadCount: 2
   },
@@ -28,7 +28,7 @@ const initialConversations: Conversation[] = [
     id: '2',
     name: 'James Rodriguez',
     photoUrl: 'https://source.unsplash.com/random/200x200?portrait&man&2',
-    lastMessage: 'I love coding, watching movies, and hiking on weekends. How about you?',
+    lastMessage: "I love coding, watching movies, and hiking on weekends. How about you?",
     timestamp: new Date(Date.now() - 36000000),
     unreadCount: 0
   },
@@ -36,7 +36,7 @@ const initialConversations: Conversation[] = [
     id: '3',
     name: 'Sarah Chen',
     photoUrl: 'https://source.unsplash.com/random/200x200?portrait&woman&3',
-    lastMessage: 'Hey! Just matched with you and thought I'd say hi!',
+    lastMessage: "Hey! Just matched with you and thought I'd say hi!",
     timestamp: new Date(Date.now() - 1800000),
     unreadCount: 1
   }

@@ -19,11 +19,11 @@ const mockMatchData = {
     name: 'Emma Wilson',
     photoUrl: 'https://source.unsplash.com/random/200x200?portrait&woman&1',
     messages: [
-      { id: '1', sender: 'match', content: 'Hi there! I saw your profile and I think we might be a good match for roommates.', timestamp: new Date(Date.now() - 86400000) },
-      { id: '2', sender: 'user', content: 'Hey Emma! Thanks for reaching out. I'm looking for someone who is clean and respectful.', timestamp: new Date(Date.now() - 82800000) },
-      { id: '3', sender: 'match', content: 'That's exactly what I'm looking for too! I'm very tidy and quiet when needed.', timestamp: new Date(Date.now() - 79200000) },
-      { id: '4', sender: 'user', content: 'Great! What part of town are you looking to live in?', timestamp: new Date(Date.now() - 75600000) },
-      { id: '5', sender: 'match', content: 'I'm looking at downtown or the university area. My budget is around $800/month for my share.', timestamp: new Date(Date.now() - 72000000) }
+      { id: '1', sender: 'match', content: "Hi there! I saw your profile and I think we might be a good match for roommates.", timestamp: new Date(Date.now() - 86400000) },
+      { id: '2', sender: 'user', content: "Hey Emma! Thanks for reaching out. I'm looking for someone who is clean and respectful.", timestamp: new Date(Date.now() - 82800000) },
+      { id: '3', sender: 'match', content: "That's exactly what I'm looking for too! I'm very tidy and quiet when needed.", timestamp: new Date(Date.now() - 79200000) },
+      { id: '4', sender: 'user', content: "Great! What part of town are you looking to live in?", timestamp: new Date(Date.now() - 75600000) },
+      { id: '5', sender: 'match', content: "I'm looking at downtown or the university area. My budget is around $800/month for my share.", timestamp: new Date(Date.now() - 72000000) }
     ]
   },
   '2': {
@@ -31,9 +31,9 @@ const mockMatchData = {
     name: 'James Rodriguez',
     photoUrl: 'https://source.unsplash.com/random/200x200?portrait&man&2',
     messages: [
-      { id: '1', sender: 'match', content: 'Hello! I think we'd make good roommates based on our profiles.', timestamp: new Date(Date.now() - 43200000) },
-      { id: '2', sender: 'user', content: 'Hi James, thanks for reaching out! What are your hobbies?', timestamp: new Date(Date.now() - 39600000) },
-      { id: '3', sender: 'match', content: 'I love coding, watching movies, and hiking on weekends. How about you?', timestamp: new Date(Date.now() - 36000000) }
+      { id: '1', sender: 'match', content: "Hello! I think we'd make good roommates based on our profiles.", timestamp: new Date(Date.now() - 43200000) },
+      { id: '2', sender: 'user', content: "Hi James, thanks for reaching out! What are your hobbies?", timestamp: new Date(Date.now() - 39600000) },
+      { id: '3', sender: 'match', content: "I love coding, watching movies, and hiking on weekends. How about you?", timestamp: new Date(Date.now() - 36000000) }
     ]
   },
   '3': {
@@ -41,7 +41,7 @@ const mockMatchData = {
     name: 'Sarah Chen',
     photoUrl: 'https://source.unsplash.com/random/200x200?portrait&woman&3',
     messages: [
-      { id: '1', sender: 'match', content: 'Hey! Just matched with you and thought I'd say hi!', timestamp: new Date(Date.now() - 1800000) }
+      { id: '1', sender: 'match', content: "Hey! Just matched with you and thought I'd say hi!", timestamp: new Date(Date.now() - 1800000) }
     ]
   }
 } as Record<string, {
