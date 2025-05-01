@@ -60,7 +60,7 @@ const mockProfiles: RoommateProfile[] = [
     name: 'Michael Taylor',
     age: 30,
     occupation: 'Nurse',
-    bio: 'Work night shifts at the hospital. Very clean and organized. I'm rarely home and make for an easy roommate.',
+    bio: "Work night shifts at the hospital. Very clean and organized. I'm rarely home and make for an easy roommate.",
     distance: 7,
     compatibility: 65,
     sleepSchedule: 'night-owl',
