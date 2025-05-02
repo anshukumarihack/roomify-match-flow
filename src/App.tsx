@@ -19,6 +19,7 @@ import MessagesPage from "./pages/MessagesPage";
 import MessageDetailPage from "./pages/MessageDetailPage";
 import AboutPage from "./pages/AboutPage";
 import HowItWorksPage from "./pages/HowItWorksPage";
+import SettingsPage from "./pages/SettingsPage";
 import AppLayout from "./layouts/AppLayout";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="/matches" element={<MatchesPage />} />
             <Route path="/messages" element={<MessagesPage />} />
             <Route path="/messages/:matchId" element={<MessageDetailPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
           </Route>
           
           {/* Catch all route */}

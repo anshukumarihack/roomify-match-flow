@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,8 @@ import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar } fro
 import { Star, Sparkles, Flame, Award, ArrowRight } from 'lucide-react';
 import ProgressBars from '../gamification/ProgressBars';
 import { useNavigate } from 'react-router-dom';
+import DashboardMenu from './DashboardMenu';
+import ProfilePicture from '../profile/ProfilePicture';
 
 interface BadgeType {
   id: string;
@@ -27,6 +29,7 @@ const Dashboard: React.FC = () => {
   const [xpToNextLevel, setXpToNextLevel] = useState(500);
   const [streakDays, setStreakDays] = useState(5);
   const [profileCompleteness, setProfileCompleteness] = useState(85);
+  const [profileImageUrl, setProfileImageUrl] = useState<string | undefined>(undefined);
   
   // Compatibility data for radar chart
   const compatibilityData = [
@@ -73,28 +76,45 @@ const Dashboard: React.FC = () => {
     if (streakDays < 30) return 30 - streakDays;
     return 0;
   };
+  
+  const handleImageChange = (url: string) => {
+    setProfileImageUrl(url);
+  };
 
   return (
     <div className="container mx-auto p-4 pb-20 space-y-6">
-      {/* Header with level and stats */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-roomify-purple">Welcome Back!</h1>
-          <div className="flex items-center mt-1">
-            <span className="bg-roomify-purple text-white text-xs px-2 py-1 rounded-full mr-2">
-              Level {level}
-            </span>
-            <span className="text-sm text-gray-600">{xp} XP</span>
+      {/* Header with level and profile */}
+      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm p-4 border border-gray-100 dark:border-gray-800">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="flex items-center gap-4">
+            <ProfilePicture 
+              userId="user-123"
+              imageUrl={profileImageUrl}
+              size="md"
+              onImageChange={handleImageChange}
+            />
+            <div>
+              <h1 className="text-2xl font-bold text-roomify-purple">Welcome Back!</h1>
+              <div className="flex items-center mt-1">
+                <span className="bg-roomify-purple text-white text-xs px-2 py-1 rounded-full mr-2">
+                  Level {level}
+                </span>
+                <span className="text-sm text-gray-600">{xp} XP</span>
+              </div>
+            </div>
           </div>
+          
+          <Button 
+            onClick={() => navigate('/swipe')}
+            className="bg-roomify-primary hover:bg-roomify-purple-dark"
+          >
+            Start Matching
+          </Button>
         </div>
-        
-        <Button 
-          onClick={() => navigate('/swipe')}
-          className="bg-roomify-primary hover:bg-roomify-purple-dark"
-        >
-          Start Matching
-        </Button>
       </div>
+      
+      {/* Main dashboard menu */}
+      <DashboardMenu />
       
       {/* Progress bars section */}
       <ProgressBars
@@ -106,75 +126,78 @@ const Dashboard: React.FC = () => {
         nextRewardDays={getNextRewardDays()}
       />
       
-      {/* Compatibility radar chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Compatibility Dimensions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={compatibilityData} outerRadius="70%">
-                <PolarGrid />
-                <PolarAngleAxis dataKey="subject" />
-                <Radar
-                  name="Compatibility"
-                  dataKey="A"
-                  stroke="#9b87f5"
-                  fill="#9b87f5"
-                  fillOpacity={0.6}
-                />
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
-      
-      {/* Badges section */}
-      <div>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Recent Badges</h2>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => navigate('/badges')}
-            className="text-roomify-blue"
-          >
-            See All <ArrowRight className="ml-1 h-4 w-4" />
-          </Button>
-        </div>
+      {/* Two column layout for charts and badges */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Compatibility radar chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Compatibility Dimensions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart data={compatibilityData} outerRadius="70%">
+                  <PolarGrid />
+                  <PolarAngleAxis dataKey="subject" />
+                  <Radar
+                    name="Compatibility"
+                    dataKey="A"
+                    stroke="#9b87f5"
+                    fill="#9b87f5"
+                    fillOpacity={0.6}
+                  />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
         
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {badges.map(badge => (
-            <Card key={badge.id} className={`border ${badge.unlocked ? 'border-roomify-purple-light' : 'border-gray-200'}`}>
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-3">
-                  <div className={`p-2 rounded-full ${badge.unlocked ? 'bg-roomify-purple-light/20' : 'bg-gray-100'}`}>
+        {/* Badges section */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-lg">Recent Badges</CardTitle>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate('/badges')}
+              className="text-roomify-blue"
+            >
+              See All <ArrowRight className="ml-1 h-4 w-4" />
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {badges.map(badge => (
+                <div key={badge.id} className={`p-3 rounded-md flex items-center space-x-3 ${badge.unlocked ? 'bg-roomify-purple-light/10' : 'bg-gray-50 dark:bg-gray-800'}`}>
+                  <div className={`p-2 rounded-full ${badge.unlocked ? 'bg-roomify-purple-light/20' : 'bg-gray-100 dark:bg-gray-700'}`}>
                     {badge.icon}
                   </div>
-                  <div>
+                  <div className="flex-grow">
                     <div className="flex items-center">
-                      <h3 className="font-medium text-gray-900">{badge.name}</h3>
+                      <h3 className="font-medium text-gray-900 dark:text-gray-100">{badge.name}</h3>
                       {badge.unlocked && (
                         <Badge className="ml-2 bg-roomify-green text-white">Unlocked</Badge>
                       )}
                     </div>
-                    <p className="text-sm text-gray-500">{badge.description}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{badge.description}</p>
                     {!badge.unlocked && badge.progress !== undefined && (
-                      <div className="text-xs text-gray-500 mt-1">
-                        Progress: {badge.progress}/{badge.total}
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 h-1.5 rounded-full mt-1 overflow-hidden">
+                        <div 
+                          className="bg-roomify-purple h-full rounded-full" 
+                          style={{ width: `${(badge.progress / badge.total!) * 100}%` }}
+                        ></div>
                       </div>
                     )}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
       
       {/* Daily Streak Card */}
-      <Card className="bg-gradient-to-r from-orange-100 to-amber-100 dark:from-orange-900 dark:to-amber-900">
+      <Card className="bg-gradient-to-r from-orange-100 to-amber-100 dark:from-orange-900/30 dark:to-amber-900/30 border-orange-200 dark:border-orange-800/50">
         <CardContent className="p-4">
           <div className="flex justify-between items-center">
             <div>

@@ -139,4 +139,80 @@
   .pulse-button {
     @apply animate-pulse-gentle;
   }
+  
+  /* Avatar glow effect */
+  .avatar-glow {
+    box-shadow: 0 0 10px rgba(155, 135, 245, 0.5);
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .avatar-glow:hover {
+    box-shadow: 0 0 15px rgba(155, 135, 245, 0.8);
+  }
+  
+  /* Card hover effect */
+  .card-hover-effect {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .card-hover-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Menu item hover animation */
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  /* Gentle pulse animation */
+  @keyframes pulseGentle {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.9;
+      transform: scale(1.05);
+    }
+  }
+  
+  .animate-pulse-gentle {
+    animation: pulseGentle 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  /* Button scales on hover */
+  .scale-on-hover {
+    transition: transform 0.2s ease;
+  }
+  
+  .scale-on-hover:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Shadow animation */
+  @keyframes pulseShadow {
+    0%, 100% {
+      box-shadow: 0 0 10px rgba(155, 135, 245, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 20px rgba(155, 135, 245, 0.6);
+    }
+  }
+  
+  .animate-pulse-shadow {
+    animation: pulseShadow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
 }

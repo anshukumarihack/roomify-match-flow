@@ -2,9 +2,11 @@
 import React, { useState, useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Camera, Upload, X } from 'lucide-react';
+import { Camera, Upload, X, Image } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
+import AvatarSelector from './AvatarSelector';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 interface ProfilePictureProps {
   userId?: string;
@@ -21,6 +23,7 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
 }) => {
   const [uploading, setUploading] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
+  const [showAvatarSelector, setShowAvatarSelector] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(imageUrl);
   
@@ -114,6 +117,21 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
     }
   };
   
+  const handleAvatarSelect = (url: string) => {
+    setPreviewUrl(url);
+    
+    if (onImageChange) {
+      onImageChange(url);
+    }
+    
+    toast({
+      title: "Success",
+      description: "Avatar selected successfully",
+    });
+    
+    setShowAvatarSelector(false);
+  };
+  
   const getInitials = (userId?: string) => {
     return userId ? userId.substring(0, 2).toUpperCase() : 'U';
   };
@@ -140,6 +158,23 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
       
       {showOptions && userId && (
         <div className="absolute mt-2 z-50 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-3 w-48">
+          <Dialog open={showAvatarSelector} onOpenChange={setShowAvatarSelector}>
+            <DialogTrigger asChild>
+              <Button 
+                variant="ghost" 
+                className="w-full justify-start mb-1"
+              >
+                <Image className="mr-2 h-4 w-4" /> Choose Avatar
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <AvatarSelector 
+                selectedUrl={previewUrl} 
+                onSelect={handleAvatarSelect} 
+              />
+            </DialogContent>
+          </Dialog>
+          
           <Button 
             variant="ghost" 
             className="w-full justify-start mb-1"
