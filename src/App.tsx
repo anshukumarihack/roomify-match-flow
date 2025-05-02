@@ -18,6 +18,7 @@ import MatchesPage from "./pages/MatchesPage";
 import MessagesPage from "./pages/MessagesPage";
 import MessageDetailPage from "./pages/MessageDetailPage";
 import AboutPage from "./pages/AboutPage";
+import HowItWorksPage from "./pages/HowItWorksPage";
 import AppLayout from "./layouts/AppLayout";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/signup" element={<Signup />} />
           <Route path="/create-profile" element={<ProfileCreationPage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/how-it-works" element={<HowItWorksPage />} />
           
           {/* Protected routes with AppLayout */}
           <Route path="/" element={<AppLayout />}>

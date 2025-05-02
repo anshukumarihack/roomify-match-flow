@@ -1,96 +1,76 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Sparkles, Heart, MessageCircle, CheckCircle, User, UserPlus, Home } from 'lucide-react';
+import { Heart, MessageCircle, Star, Users, X } from 'lucide-react';
 
 const HowItWorksPage: React.FC = () => {
   const steps = [
     {
-      icon: <User className="h-10 w-10 text-roomify-purple" />,
       title: "Create Your Profile",
-      description: "Start by creating your profile and specifying your preferences, lifestyle, and what you're looking for in a roommate."
+      description: "Set up your profile with photos and your preferences for an ideal roommate or partner.",
+      icon: <Users className="h-10 w-10 text-roomify-purple" />
     },
     {
-      icon: <Sparkles className="h-10 w-10 text-yellow-500" />,
-      title: "Discover Matches",
-      description: "Our smart matching algorithm will find potential roommates that match your lifestyle and preferences."
+      title: "Start Swiping",
+      description: "Browse profiles and swipe right on people you're interested in connecting with, or left to pass.",
+      icon: <X className="h-10 w-10 text-red-500" />
     },
     {
-      icon: <Heart className="h-10 w-10 text-pink-500" />,
-      title: "Swipe Right",
-      description: "Like profiles that interest you. If they like yours too, it's a match!"
+      title: "Match & Connect",
+      description: "When someone also swipes right on you, it's a match! Connect and chat to learn more about each other.",
+      icon: <Heart className="h-10 w-10 text-green-500" />
     },
     {
-      icon: <MessageCircle className="h-10 w-10 text-blue-500" />,
-      title: "Start Chatting",
-      description: "Connect with your matches through our messaging system to see if you're a good fit."
+      title: "Message Your Matches",
+      description: "Start a conversation with your matches to discuss potential compatibility and next steps.",
+      icon: <MessageCircle className="h-10 w-10 text-blue-500" />
     },
     {
-      icon: <CheckCircle className="h-10 w-10 text-green-500" />,
-      title: "Meet Up Safely",
-      description: "Arrange to meet your potential roommate in a public place to further discuss your living arrangement."
-    },
-    {
-      icon: <Home className="h-10 w-10 text-orange-500" />,
-      title: "Find Your New Home",
-      description: "Move in with your ideal roommate or welcome them to your place."
+      title: "Earn Rewards",
+      description: "Gain XP and earn badges as you use the app and interact with potential matches.",
+      icon: <Star className="h-10 w-10 text-yellow-500" />
     }
   ];
 
   return (
-    <div className="container mx-auto py-12 px-4">
-      <div className="text-center mb-12">
-        <h1 className="text-3xl md:text-4xl font-bold text-roomify-purple mb-4">How Roomify Works</h1>
-        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          Roomify makes finding the perfect roommate easy, safe, and fun through our simple process.
+    <div className="container mx-auto px-4 py-12 max-w-5xl">
+      <h1 className="text-3xl md:text-4xl font-bold text-center mb-8 text-roomify-purple">How Roomify Works</h1>
+      
+      <div className="text-center mb-10">
+        <p className="text-lg text-gray-700 dark:text-gray-300">
+          Finding your perfect roommate or partner has never been easier. 
+          Follow these simple steps to get started on your journey.
         </p>
       </div>
       
-      <div className="max-w-5xl mx-auto">
-        <div className="relative">
-          {/* Connecting line */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-roomify-purple-light hidden md:block"></div>
-          
-          {/* Steps */}
-          <div className="space-y-12">
-            {steps.map((step, index) => (
-              <div key={index} className={`flex flex-col md:flex-row gap-6 md:items-center ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
-                <div className="md:w-1/2 flex justify-center">
-                  <Card className={`relative shadow-lg w-full max-w-sm border-t-4 ${
-                    index % 3 === 0 ? 'border-roomify-purple' : 
-                    index % 3 === 1 ? 'border-roomify-green' : 'border-roomify-pink-light'
-                  }`}>
-                    <CardContent className="pt-6 pb-4 px-6">
-                      <div className="absolute -top-6 left-6 rounded-full p-3 bg-white shadow-md">
-                        {step.icon}
-                      </div>
-                      <div className="mt-4">
-                        <h3 className="text-xl font-bold mb-2">{step.title}</h3>
-                        <p className="text-gray-600 dark:text-gray-400">{step.description}</p>
-                      </div>
-                      <div className="absolute top-4 right-4 h-8 w-8 rounded-full bg-roomify-purple-light flex items-center justify-center text-white font-bold">
-                        {index + 1}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-                
-                <div className="hidden md:block md:w-1/2"></div>
+      <div className="space-y-12 mt-16">
+        {steps.map((step, index) => (
+          <div key={index} className="relative">
+            {index !== steps.length - 1 && (
+              <div className="absolute left-10 top-20 h-24 w-0.5 bg-gradient-to-b from-roomify-purple to-transparent" />
+            )}
+            <div className="flex flex-col md:flex-row gap-6 items-center">
+              <div className="flex-shrink-0 w-20 h-20 rounded-full bg-roomify-purple/10 flex items-center justify-center animate-pulse-shadow">
+                {step.icon}
               </div>
-            ))}
+              <Card className={`w-full md:w-auto flex-grow card-hover-effect ${index % 2 === 0 ? 'bg-gradient-to-r' : 'bg-gradient-to-l'} from-white to-purple-50 dark:from-gray-800 dark:to-gray-700`}>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold mb-2 text-roomify-purple">Step {index + 1}: {step.title}</h3>
+                  <p className="text-gray-700 dark:text-gray-300">{step.description}</p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
-      
+
       <div className="mt-20 text-center">
-        <h2 className="text-2xl font-bold mb-4">Ready to Find Your Perfect Roommate?</h2>
-        <div className="inline-block rounded-full bg-gradient-to-r from-roomify-purple to-roomify-pink p-[4px]">
-          <div className="flex justify-center items-center gap-2 bg-white dark:bg-gray-900 rounded-full px-6 py-3">
-            <UserPlus className="h-5 w-5 text-roomify-purple" />
-            <span className="font-medium bg-gradient-to-r from-roomify-purple to-roomify-pink-light bg-clip-text text-transparent">
-              Join Roomify Today
-            </span>
-          </div>
+        <h2 className="text-2xl font-bold mb-4 text-roomify-purple">Ready to Get Started?</h2>
+        <p className="text-lg mb-6 text-gray-700 dark:text-gray-300">
+          Join our community today and find your perfect match!
+        </p>
+        <div className="bg-roomify-purple text-white rounded-lg px-6 py-3 inline-block font-medium hover:bg-roomify-purple-dark transition-colors cursor-pointer">
+          Start Matching Now
         </div>
       </div>
     </div>

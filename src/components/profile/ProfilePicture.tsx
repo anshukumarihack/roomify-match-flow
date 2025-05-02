@@ -100,7 +100,7 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
     }
   };
   
-  const triggerFileInput = (type: 'device') => {
+  const triggerFileInput = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
@@ -124,7 +124,7 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
         className={`relative ${sizeClasses[size]} cursor-pointer group`}
         onClick={() => userId && setShowOptions(!showOptions)}
       >
-        <Avatar className={`${sizeClasses[size]} border-2 border-roomify-purple`}>
+        <Avatar className={`${sizeClasses[size]} border-2 border-roomify-purple avatar-glow`}>
           <AvatarImage src={previewUrl} />
           <AvatarFallback className="bg-roomify-purple-light text-white">
             {getInitials(userId)}
@@ -133,7 +133,7 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
         
         {userId && (
           <div className="absolute inset-0 bg-black bg-opacity-40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <Upload className="w-6 h-6 text-white" />
+            <Upload className="h-6 w-6 text-white" />
           </div>
         )}
       </div>
@@ -143,7 +143,7 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
           <Button 
             variant="ghost" 
             className="w-full justify-start mb-1"
-            onClick={() => triggerFileInput('device')}
+            onClick={() => triggerFileInput()}
           >
             <Upload className="mr-2 h-4 w-4" /> Upload Image
           </Button>

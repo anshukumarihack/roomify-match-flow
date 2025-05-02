@@ -28,9 +28,40 @@
   animation: pulse-shadow 2s infinite;
 }
 
+/* Dating app specific animations */
+@keyframes heart-beat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+.animate-heart-beat {
+  animation: heart-beat 1.5s infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
 /* Enhanced card designs */
 .card-gradient {
   background: linear-gradient(135deg, #9b87f5 0%, #6E59A5 100%);
+}
+
+.card-gradient-love {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
 }
 
 .card-hover-effect {
@@ -74,6 +105,14 @@
   background: linear-gradient(to right, #8b5cf6, #9b87f5);
 }
 
+.button-gradient-love {
+  background: linear-gradient(to right, #ff6b6b, #ff4757);
+}
+
+.button-gradient-love:hover {
+  background: linear-gradient(to right, #ff4757, #ff6b6b);
+}
+
 /* Message bubbles for chat */
 .message-bubble-sender {
   background-color: #9b87f5;
@@ -90,4 +129,102 @@
 /* Avatar glow effect */
 .avatar-glow {
   box-shadow: 0 0 10px 2px rgba(155, 135, 245, 0.3);
+}
+
+.avatar-glow-love {
+  box-shadow: 0 0 10px 2px rgba(255, 107, 107, 0.3);
+}
+
+/* Match indicator pulse */
+@keyframes match-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(255, 107, 107, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+  }
+}
+
+.match-pulse {
+  animation: match-pulse 1.5s infinite;
+}
+
+/* Dating app specific UI elements */
+.like-button {
+  transition: all 0.3s ease;
+}
+
+.like-button:hover {
+  transform: scale(1.1);
+  color: #ff6b6b;
+}
+
+.dislike-button {
+  transition: all 0.3s ease;
+}
+
+.dislike-button:hover {
+  transform: scale(1.1);
+  color: #576574;
+}
+
+/* Profile card styles */
+.profile-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.profile-card-image {
+  transition: transform 0.5s ease;
+}
+
+.profile-card:hover .profile-card-image {
+  transform: scale(1.05);
+}
+
+.profile-card-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 15px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  color: white;
+}
+
+/* Match percentage indicator */
+.match-percentage {
+  position: relative;
+  height: 6px;
+  background-color: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.match-percentage-fill {
+  position: absolute;
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(to right, #9b87f5, #ff6b6b);
+  transition: width 0.5s ease;
+}
+
+/* Glow on new messages */
+.new-message-glow {
+  box-shadow: 0 0 15px rgba(155, 135, 245, 0.7);
+  animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(155, 135, 245, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(155, 135, 245, 0.9);
+  }
 }
