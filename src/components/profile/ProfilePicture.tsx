@@ -1,12 +1,10 @@
 
 import React, { useState, useRef } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Camera, Upload, X, Image } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
+import { DialogContent } from '@/components/ui/dialog';
 import AvatarSelector from './AvatarSelector';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import ProfilePictureOptions from './ProfilePictureOptions';
+import ProfileAvatarDisplay from './ProfileAvatarDisplay';
 
 interface ProfilePictureProps {
   userId?: string;
@@ -27,12 +25,6 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(imageUrl);
   
-  const sizeClasses = {
-    'sm': 'h-16 w-16',
-    'md': 'h-24 w-24',
-    'lg': 'h-32 w-32'
-  };
-
   const uploadImage = async (file: File) => {
     if (!userId) {
       toast({
@@ -113,72 +105,35 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
     setShowOptions(false);
   };
   
-  const getInitials = (userId?: string) => {
-    return userId ? userId.substring(0, 2).toUpperCase() : 'U';
-  };
-  
   return (
     <div className="relative">
-      <div 
-        className={`relative ${sizeClasses[size]} cursor-pointer group`}
+      <ProfileAvatarDisplay 
+        previewUrl={previewUrl}
+        size={size}
+        userId={userId}
         onClick={() => userId && setShowOptions(!showOptions)}
-      >
-        <Avatar className={`${sizeClasses[size]} border-2 border-roomify-purple avatar-glow`}>
-          <AvatarImage src={previewUrl} />
-          <AvatarFallback className="bg-roomify-purple-light text-white">
-            {getInitials(userId)}
-          </AvatarFallback>
-        </Avatar>
-        
-        {userId && (
-          <div className="absolute inset-0 bg-black bg-opacity-40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <Upload className="h-6 w-6 text-white" />
-          </div>
-        )}
-      </div>
+      />
       
       {showOptions && userId && (
-        <div className="absolute mt-2 z-50 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-3 w-48">
-          <Dialog open={showAvatarSelector} onOpenChange={setShowAvatarSelector}>
-            <DialogTrigger asChild>
-              <Button 
-                variant="ghost" 
-                className="w-full justify-start mb-1"
-              >
-                <Image className="mr-2 h-4 w-4" /> Choose Avatar
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <AvatarSelector 
-                selectedUrl={previewUrl} 
-                onSelect={handleAvatarSelect} 
-              />
-            </DialogContent>
-          </Dialog>
-          
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start mb-1"
-            onClick={() => triggerFileInput()}
-          >
-            <Upload className="mr-2 h-4 w-4" /> Upload Image
-          </Button>
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start"
-            onClick={triggerCamera}
-          >
-            <Camera className="mr-2 h-4 w-4" /> Take Photo
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-1"
-            onClick={() => setShowOptions(false)}
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
+        <ProfilePictureOptions 
+          userId={userId}
+          onClose={() => setShowOptions(false)}
+          triggerFileInput={triggerFileInput}
+          triggerCamera={triggerCamera}
+          previewUrl={previewUrl}
+          onSelectAvatar={handleAvatarSelect}
+          showAvatarSelector={showAvatarSelector}
+          setShowAvatarSelector={setShowAvatarSelector}
+        />
+      )}
+
+      {showAvatarSelector && (
+        <DialogContent>
+          <AvatarSelector 
+            selectedUrl={previewUrl} 
+            onSelect={handleAvatarSelect} 
+          />
+        </DialogContent>
       )}
       
       <input
