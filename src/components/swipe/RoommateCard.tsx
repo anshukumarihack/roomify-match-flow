@@ -20,7 +20,7 @@ export interface RoommateProfile {
   dietaryPreferences: string[];
   photoUrls: string[];
   xpValue: number;
-  avatarUrl?: string; // Added avatarUrl property
+  avatarUrl: string; // Changed to required for random avatars
 }
 
 interface RoommateCardProps {
@@ -34,23 +34,10 @@ const RoommateCard: React.FC<RoommateCardProps> = ({
   onSwipe,
   isSuperSwipe = false
 }) => {
-  const [currentPhotoIndex, setCurrentPhotoIndex] = React.useState(0);
   const [startX, setStartX] = React.useState(0);
   const [offsetX, setOffsetX] = React.useState(0);
   const [isDragging, setIsDragging] = React.useState(false);
   const cardRef = React.useRef<HTMLDivElement>(null);
-
-  const nextPhoto = () => {
-    if (currentPhotoIndex < profile.photoUrls.length - 1) {
-      setCurrentPhotoIndex(prev => prev + 1);
-    }
-  };
-
-  const prevPhoto = () => {
-    if (currentPhotoIndex > 0) {
-      setCurrentPhotoIndex(prev => prev - 1);
-    }
-  };
 
   const handleStart = (clientX: number) => {
     setStartX(clientX);
@@ -140,14 +127,6 @@ const RoommateCard: React.FC<RoommateCardProps> = ({
     }
   };
 
-  // Use the avatarUrl if available, otherwise generate a placeholder image
-  const photoUrl = profile.avatarUrl || profile.photoUrls[currentPhotoIndex] || getPlaceholderImage(currentPhotoIndex);
-
-  // Generate a placeholder image URL for demo purposes
-  function getPlaceholderImage(index: number) {
-    return `https://source.unsplash.com/random/400x600?person&sig=${profile.id}-${index}`;
-  }
-
   const renderCompatibilityBadge = () => {
     let color = "bg-red-500";
     
@@ -225,65 +204,16 @@ const RoommateCard: React.FC<RoommateCardProps> = ({
           </div>
         </div>
       )}
-      
-      {/* Photo navigation dots */}
-      <div className="absolute top-2 left-0 right-0 z-20 flex justify-center gap-1">
-        {profile.photoUrls.map((_, index) => (
-          <div 
-            key={index} 
-            className={`h-1 rounded-full transition-all ${
-              index === currentPhotoIndex 
-                ? 'w-6 bg-white' 
-                : 'w-2 bg-white/50'
-            }`}
-          />
-        ))}
-      </div>
 
-      {/* Photo container with navigation controls */}
-      <div className="h-4/6 relative">
-        {/* Use Avatar component if avatarUrl exists */}
-        {profile.avatarUrl ? (
-          <div className="h-full w-full flex items-center justify-center bg-gray-100">
-            <Avatar className="h-64 w-64 rounded-full border-4 border-roomify-purple">
-              <AvatarImage src={profile.avatarUrl} alt={profile.name} className="object-cover" />
-              <AvatarFallback className="text-4xl bg-roomify-purple-light text-white">
-                {profile.name.substring(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-        ) : (
-          <img 
-            src={photoUrl} 
-            alt={profile.name}
-            className="w-full h-full object-cover"
-          />
-        )}
-
+      {/* Avatar display */}
+      <div className="h-4/6 relative bg-gray-100 flex items-center justify-center">
+        <Avatar className="h-64 w-64 rounded-full border-4 border-roomify-purple avatar-glow">
+          <AvatarImage src={profile.avatarUrl} alt={profile.name} className="object-cover" />
+          <AvatarFallback className="text-4xl bg-roomify-purple-light text-white">
+            {profile.name.substring(0, 2).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
         {renderCompatibilityBadge()}
-
-        {/* Left/right buttons for photo navigation */}
-        {!profile.avatarUrl && (
-          <>
-            {currentPhotoIndex > 0 && (
-              <button 
-                onClick={(e) => { e.stopPropagation(); prevPhoto(); }} 
-                className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/20 hover:bg-black/40 rounded-full p-2 text-white z-20"
-              >
-                ‹
-              </button>
-            )}
-            
-            {currentPhotoIndex < profile.photoUrls.length - 1 && (
-              <button 
-                onClick={(e) => { e.stopPropagation(); nextPhoto(); }} 
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/20 hover:bg-black/40 rounded-full p-2 text-white z-20"
-              >
-                ›
-              </button>
-            )}
-          </>
-        )}
       </div>
 
       <CardContent className="p-4 flex flex-col space-y-3">

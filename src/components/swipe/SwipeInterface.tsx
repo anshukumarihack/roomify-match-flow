@@ -6,94 +6,61 @@ import { X, Heart, Sparkles } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
-// Enhanced mock data for roommate profiles with avatar URLs
-const mockProfiles: RoommateProfile[] = [
-  {
-    id: '1',
-    name: 'Emma Wilson',
-    age: 25,
-    occupation: 'Marketing Manager',
-    bio: 'Looking for a clean, responsible roommate. I work 9-5 and enjoy reading and hiking on weekends.',
-    distance: 3,
-    compatibility: 95,
-    sleepSchedule: 'early-bird',
-    cleanliness: 4,
-    smoking: 'non-smoker',
-    pets: 'no-pets',
-    dietaryPreferences: ['vegetarian'],
-    photoUrls: ['', '', ''],
+// Generate mock data for roommate profiles with realistic avatars
+const generateMockProfiles = (count: number): RoommateProfile[] => {
+  const names = [
+    'Emma Wilson', 'James Rodriguez', 'Sarah Chen', 'Michael Taylor', 'Olivia Brown',
+    'Noah Martinez', 'Sophia Johnson', 'Ethan Williams', 'Ava Jones', 'Liam Garcia',
+    'Isabella Miller', 'Mason Davis', 'Mia Hernandez', 'Jacob Smith', 'Charlotte Wilson',
+    'William Anderson', 'Amelia Thomas', 'Benjamin Moore', 'Abigail Jackson', 'Lucas White',
+    'Emily Harris', 'Alexander Martin', 'Elizabeth Thompson', 'Daniel Garcia', 'Sofia Robinson'
+  ];
+  
+  const occupations = [
+    'Software Developer', 'Marketing Manager', 'Teacher', 'Nurse', 
+    'Graphic Designer', 'UX Designer', 'Data Analyst', 'Financial Advisor',
+    'Student', 'Freelancer', 'Entrepreneur', 'Sales Representative',
+    'Doctor', 'Engineer', 'Lawyer', 'Consultant', 'Artist',
+    'Writer', 'Chef', 'Photographer', 'Musician', 'Architect',
+    'Psychologist', 'HR Manager', 'Project Manager'
+  ];
+  
+  const bios = [
+    'Looking for a clean, responsible roommate. I work 9-5 and enjoy reading and hiking on weekends.',
+    'Tech enthusiast working from home. Pretty laid-back, but prefer a tidy space. Love cooking and video games.',
+    'PhD student in Biology. I need quiet study time but also enjoy socializing. Looking for someone respectful of space.',
+    'Work night shifts at the hospital. Very clean and organized. I\'m rarely home and make for an easy roommate.',
+    'Creative type working from home. I keep common spaces clean but my room can get messy with projects. Love cooking and art.',
+    'Remote worker in tech. I\'m quiet, clean, and respectful. Looking for similar roommates who value peace and quiet.',
+    'Grad student looking for responsible roommates. I\'m studious during the week but social on weekends.',
+    'Young professional working in finance. Clean, organized, and prefer a drama-free living environment.',
+    'Fitness enthusiast who loves cooking healthy meals. Early riser and looking for positive, active roommates.',
+    'Musician who practices during reasonable hours. I\'m easygoing and sociable, but respect personal space.',
+    'Medical resident with irregular hours. Quiet, clean, and mostly just need a place to sleep between shifts.',
+    'Digital nomad who travels often. Looking for a flexible living situation with understanding roommates.',
+    'Law student who studies a lot. I\'m organized, quiet, and make a great roommate for other professionals.',
+    'Artist who needs some space for creative work. I\'m friendly, respectful, and clean in common areas.',
+    'Recent grad starting my first job. Looking for roommates in a similar life stage to share experiences with.'
+  ];
+
+  return Array.from({ length: count }, (_, i) => ({
+    id: `profile-${i + 1}`,
+    name: names[i % names.length],
+    age: Math.floor(Math.random() * 10) + 22, // 22-32 years old
+    occupation: occupations[i % occupations.length],
+    bio: bios[i % bios.length],
+    distance: Math.floor(Math.random() * 15) + 1, // 1-15 miles
+    compatibility: Math.floor(Math.random() * 30) + 70, // 70-100% compatibility
+    sleepSchedule: ['early-bird', 'night-owl', 'mixed'][Math.floor(Math.random() * 3)],
+    cleanliness: Math.floor(Math.random() * 5) + 1, // 1-5 rating
+    smoking: ['non-smoker', 'outside-only', 'smoker'][Math.floor(Math.random() * 3)],
+    pets: ['has-pets', 'no-pets', 'planning-pets'][Math.floor(Math.random() * 3)],
+    dietaryPreferences: [['omnivore', 'vegetarian', 'vegan', 'keto', 'paleo'][Math.floor(Math.random() * 5)]],
+    photoUrls: [],
     xpValue: 10,
-    avatarUrl: 'https://source.unsplash.com/random/400x400?woman&1'
-  },
-  {
-    id: '2',
-    name: 'James Rodriguez',
-    age: 28,
-    occupation: 'Software Developer',
-    bio: 'Tech enthusiast working from home. Pretty laid-back, but prefer a tidy space. Love cooking and video games.',
-    distance: 5,
-    compatibility: 85,
-    sleepSchedule: 'night-owl',
-    cleanliness: 3,
-    smoking: 'outside-only',
-    pets: 'has-pets',
-    dietaryPreferences: ['omnivore'],
-    photoUrls: ['', ''],
-    xpValue: 10,
-    avatarUrl: 'https://source.unsplash.com/random/400x400?man&2'
-  },
-  {
-    id: '3',
-    name: 'Sarah Chen',
-    age: 24,
-    occupation: 'Grad Student',
-    bio: 'PhD student in Biology. I need quiet study time but also enjoy socializing. Looking for someone respectful of space.',
-    distance: 2,
-    compatibility: 78,
-    sleepSchedule: 'mixed',
-    cleanliness: 5,
-    smoking: 'non-smoker',
-    pets: 'no-pets',
-    dietaryPreferences: ['vegan'],
-    photoUrls: ['', '', '', ''],
-    xpValue: 10,
-    avatarUrl: 'https://source.unsplash.com/random/400x400?woman&3'
-  },
-  {
-    id: '4',
-    name: 'Michael Taylor',
-    age: 30,
-    occupation: 'Nurse',
-    bio: "Work night shifts at the hospital. Very clean and organized. I'm rarely home and make for an easy roommate.",
-    distance: 7,
-    compatibility: 65,
-    sleepSchedule: 'night-owl',
-    cleanliness: 4,
-    smoking: 'non-smoker',
-    pets: 'planning-pets',
-    dietaryPreferences: ['keto'],
-    photoUrls: ['', ''],
-    xpValue: 10,
-    avatarUrl: 'https://source.unsplash.com/random/400x400?man&4'
-  },
-  {
-    id: '5',
-    name: 'Jessica Patel',
-    age: 27,
-    occupation: 'Graphic Designer',
-    bio: 'Creative type working from home. I keep common spaces clean but my room can get messy with projects. Love cooking and art.',
-    distance: 4,
-    compatibility: 88,
-    sleepSchedule: 'mixed',
-    cleanliness: 3,
-    smoking: 'non-smoker',
-    pets: 'has-pets',
-    dietaryPreferences: ['vegetarian'],
-    photoUrls: ['', '', ''],
-    xpValue: 10,
-    avatarUrl: 'https://source.unsplash.com/random/400x400?woman&5'
-  }
-];
+    avatarUrl: `https://i.pravatar.cc/400?u=${i + 1}${Date.now()}` // Using pravatar for random realistic avatars
+  }));
+};
 
 interface SwipeInterfaceProps {
   onMatch: (profile: RoommateProfile) => void;
@@ -101,7 +68,8 @@ interface SwipeInterfaceProps {
 }
 
 const SwipeInterface: React.FC<SwipeInterfaceProps> = ({ onMatch, onGainXP }) => {
-  const [profiles, setProfiles] = useState<RoommateProfile[]>(mockProfiles);
+  // Generate 25 mock profiles
+  const [profiles, setProfiles] = useState<RoommateProfile[]>(generateMockProfiles(25));
   const [currentProfile, setCurrentProfile] = useState<RoommateProfile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuperSwipe, setIsSuperSwipe] = useState(false);
@@ -114,62 +82,6 @@ const SwipeInterface: React.FC<SwipeInterfaceProps> = ({ onMatch, onGainXP }) =>
       setCurrentProfile(profiles[0]);
     }
   }, [profiles, currentProfile]);
-
-  // Optional: Load profiles from Supabase
-  const fetchMatchesFromSupabase = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('match')
-        .select('*')
-        .limit(10);
-        
-      if (error) throw error;
-      
-      if (data && data.length > 0) {
-        // Map Supabase match data to RoommateProfile format
-        const mappedProfiles: RoommateProfile[] = data.map(match => ({
-          id: match.id.toString(),
-          name: match.name || 'Unknown',
-          age: Math.floor(Math.random() * 10) + 22, // Random age between 22-32
-          occupation: getRandomOccupation(),
-          bio: match.interests || 'No bio available',
-          distance: Math.floor(Math.random() * 10) + 1, // Random distance 1-10 miles
-          compatibility: Math.floor(Math.random() * 30) + 70, // Random compatibility 70-100%
-          sleepSchedule: convertSleepTime(match.sleep_time),
-          cleanliness: match.cleanliness || 3,
-          smoking: 'non-smoker',
-          pets: Math.random() > 0.5 ? 'has-pets' : 'no-pets',
-          dietaryPreferences: [match.food || 'omnivore'],
-          photoUrls: [''],
-          xpValue: 10,
-          avatarUrl: `https://source.unsplash.com/random/400x400?person&${match.id}`
-        }));
-        
-        setProfiles(mappedProfiles);
-      }
-    } catch (error) {
-      console.error('Error fetching matches:', error);
-      // Fallback to mock data
-      setProfiles(mockProfiles);
-    }
-  };
-
-  // Helper functions for mapping Supabase data
-  const convertSleepTime = (sleepTime: number | null): string => {
-    if (!sleepTime) return 'mixed';
-    if (sleepTime <= 2) return 'night-owl';
-    if (sleepTime >= 4) return 'early-bird';
-    return 'mixed';
-  };
-
-  const getRandomOccupation = (): string => {
-    const occupations = [
-      'Software Developer', 'Marketing Manager', 'Teacher', 'Nurse', 
-      'Graphic Designer', 'UX Designer', 'Data Analyst', 'Financial Advisor',
-      'Student', 'Freelancer', 'Entrepreneur'
-    ];
-    return occupations[Math.floor(Math.random() * occupations.length)];
-  };
 
   const handleSwipe = (direction: 'left' | 'right', profile: RoommateProfile) => {
     // Track that user swiped and award XP
@@ -247,10 +159,24 @@ const SwipeInterface: React.FC<SwipeInterfaceProps> = ({ onMatch, onGainXP }) =>
     }
   };
 
-  // Attempt to load matches from Supabase when component mounts
-  useEffect(() => {
-    fetchMatchesFromSupabase();
-  }, []);
+  // Refresh profiles function
+  const refreshProfiles = () => {
+    setIsLoading(true);
+    // Generate new batch of 25 profiles
+    const newProfiles = generateMockProfiles(25);
+    setProfiles(newProfiles);
+    
+    setTimeout(() => {
+      setCurrentProfile(newProfiles[0]);
+      setIsLoading(false);
+      
+      toast({
+        title: "Profiles Refreshed",
+        description: "Found 25 new potential roommates for you!",
+        duration: 2000
+      });
+    }, 1000);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center h-full p-4 relative">
@@ -304,7 +230,7 @@ const SwipeInterface: React.FC<SwipeInterfaceProps> = ({ onMatch, onGainXP }) =>
           <h2 className="text-2xl font-semibold text-roomify-purple mb-2">No More Profiles</h2>
           <p className="text-gray-600 mb-6">Check back later for more potential roommates!</p>
           <Button 
-            onClick={() => fetchMatchesFromSupabase()} 
+            onClick={refreshProfiles} 
             className="bg-roomify-primary hover:bg-roomify-purple-dark"
           >
             Refresh Profiles

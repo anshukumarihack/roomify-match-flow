@@ -41,7 +41,7 @@ const generateMockMatches = (count: number): Match[] => {
   return Array.from({ length: count }, (_, i) => ({
     id: `match-${i + 1}`,
     name: names[i % names.length],
-    avatarUrl: `https://source.unsplash.com/collection/1346951/150x150?${i + 1}`,
+    avatarUrl: `https://i.pravatar.cc/150?u=${i + 1}${Date.now()}`, // Using pravatar for random realistic avatars
     lastActive: lastActiveTimes[Math.floor(Math.random() * lastActiveTimes.length)],
     compatibility: Math.floor(Math.random() * 30) + 70, // 70-100% compatibility
     hasUnreadMessages: Math.random() > 0.7, // 30% chance of having unread messages
@@ -64,7 +64,7 @@ const MatchList: React.FC = () => {
         const { data, error } = await supabase
           .from('match')
           .select('*')
-          .limit(25);
+          .limit(5);
           
         if (error) throw error;
         
@@ -77,7 +77,7 @@ const MatchList: React.FC = () => {
             compatibility: Math.floor(Math.random() * 30) + 70, // Random compatibility between 70-100%
             hasUnreadMessages: Math.random() > 0.7, // 30% chance of having unread messages
             matchDate: getRandomMatchDate(),
-            avatarUrl: `https://source.unsplash.com/collection/1346951/150x150?${match.id}`,
+            avatarUrl: `https://i.pravatar.cc/150?u=${match.id}${Date.now()}`, // Using pravatar for realistic avatars
             personality: match.personality,
             sleep_time: match.sleep_time?.toString(),
             cleanliness: match.cleanliness?.toString()
@@ -85,14 +85,18 @@ const MatchList: React.FC = () => {
           
           setMatches(mappedMatches);
         } else {
-          // Fallback to mock data if no matches found
-          const mockMatches = generateMockMatches(25);
+          // Fallback to mock data if no matches found - only show top 5 matches
+          const mockMatches = generateMockMatches(5);
+          // Sort by compatibility in descending order to show best matches first
+          mockMatches.sort((a, b) => b.compatibility - a.compatibility);
           setMatches(mockMatches);
         }
       } catch (error) {
         console.error('Error fetching matches:', error);
-        // Fallback to mock data on error
-        const mockMatches = generateMockMatches(25);
+        // Fallback to mock data on error - only show top 5 matches
+        const mockMatches = generateMockMatches(5);
+        // Sort by compatibility in descending order to show best matches first
+        mockMatches.sort((a, b) => b.compatibility - a.compatibility);
         setMatches(mockMatches);
       } finally {
         setLoading(false);
@@ -101,14 +105,6 @@ const MatchList: React.FC = () => {
     
     fetchMatches();
   }, []);
-
-  const handleMessageClick = (matchId: string) => {
-    navigate(`/messages/${matchId}`);
-  };
-
-  const handleProfileClick = (matchId: string) => {
-    navigate(`/profile/${matchId}`);
-  };
 
   // Helper function to generate random last active times
   const getRandomLastActive = (): string => {
@@ -124,7 +120,7 @@ const MatchList: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 pb-20">
-      <h1 className="text-2xl font-bold mb-6 text-roomify-purple">Your Matches ({matches.length})</h1>
+      <h1 className="text-2xl font-bold mb-6 text-roomify-purple">Your Best Matches</h1>
       
       {loading ? (
         <div className="flex justify-center py-12">
@@ -150,7 +146,7 @@ const MatchList: React.FC = () => {
                   <div className="relative">
                     <Avatar 
                       className="h-24 w-24 cursor-pointer rounded-none"
-                      onClick={() => handleProfileClick(match.id)}
+                      onClick={() => navigate(`/profile/${match.id}`)}
                     >
                       <AvatarImage 
                         src={match.avatarUrl} 
@@ -171,7 +167,7 @@ const MatchList: React.FC = () => {
                   <div className="flex-1 p-4">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="font-semibold text-lg text-roomify-purple" onClick={() => handleProfileClick(match.id)} style={{cursor: 'pointer'}}>
+                        <h3 className="font-semibold text-lg text-roomify-purple" onClick={() => navigate(`/profile/${match.id}`)} style={{cursor: 'pointer'}}>
                           {match.name}
                         </h3>
                         <div className="flex items-center mt-1">
@@ -214,7 +210,7 @@ const MatchList: React.FC = () => {
                         </Button>
                         <Button
                           size="sm"
-                          onClick={() => handleMessageClick(match.id)}
+                          onClick={() => navigate(`/messages/${match.id}`)}
                           className="bg-roomify-primary hover:bg-roomify-purple-dark rounded-full relative"
                         >
                           <MessageCircle className="h-5 w-5" />

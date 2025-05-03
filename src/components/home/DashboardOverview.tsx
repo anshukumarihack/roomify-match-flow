@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
 import { Users, Flame, Badge as BadgeIcon, MessageCircle } from 'lucide-react';
@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import ProfilePicture from '@/components/profile/ProfilePicture';
 
 interface DashboardOverviewProps {
   isLoggedIn: boolean;
@@ -31,19 +30,13 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
   loading 
 }) => {
   const navigate = useNavigate();
-  const [profilePicUrl, setProfilePicUrl] = useState<string | undefined>(undefined);
   
   if (!isLoggedIn) {
     return null;
   }
   
-  // Mock user ID for demo purposes
-  const mockUserId = 'user-123';
-
-  const handleProfileImageChange = (url: string) => {
-    setProfilePicUrl(url);
-    console.log("Profile image changed:", url);
-  };
+  // Mock user avatar URL
+  const userAvatarUrl = `https://i.pravatar.cc/300?u=user-123-${Date.now()}`;
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 py-8 px-4 flex-1">
@@ -55,12 +48,14 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               <CardTitle>Your Profile</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center space-y-4">
-              <ProfilePicture
-                userId={mockUserId}
-                imageUrl={profilePicUrl}
-                onImageChange={handleProfileImageChange}
-                size="lg"
-              />
+              <div className="relative">
+                <Avatar className="h-32 w-32 avatar-glow">
+                  <AvatarImage src={userAvatarUrl} alt="User Avatar" />
+                  <AvatarFallback className="bg-roomify-purple-light text-white text-4xl">
+                    GU
+                  </AvatarFallback>
+                </Avatar>
+              </div>
               
               <div className="text-center">
                 <h3 className="text-xl font-semibold">Guest User</h3>
@@ -171,8 +166,8 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                   {recentMatches.map(match => (
                     <div key={match.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col items-center text-center hover:shadow-md transition-shadow">
-                      <Avatar className="h-20 w-20 mb-4">
-                        <AvatarImage src={`https://source.unsplash.com/collection/1346951/150x150?${match.id}`} alt={match.name} />
+                      <Avatar className="h-20 w-20 mb-4 avatar-glow">
+                        <AvatarImage src={`https://i.pravatar.cc/150?u=${match.id}-${Date.now()}`} alt={match.name} />
                         <AvatarFallback className="bg-roomify-purple-light text-white text-xl">
                           {match.name?.substring(0, 2).toUpperCase() || "RM"}
                         </AvatarFallback>
