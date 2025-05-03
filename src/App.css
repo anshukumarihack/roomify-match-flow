@@ -109,3 +109,27 @@
 .btn-hover-effect:hover:after {
   width: 100%;
 }
+
+/* Navigation bar styles */
+.nav-item {
+  transition: all 0.3s ease;
+}
+
+.nav-item:hover {
+  transform: translateY(-2px);
+}
+
+.nav-item.active {
+  font-weight: 600;
+}
+
+/* Navigation icon pulse effect */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.pulse-on-active:active {
+  animation: pulse 0.3s ease;
+}
