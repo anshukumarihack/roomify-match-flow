@@ -46,38 +46,23 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
     setUploading(true);
     
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${userId}/${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      // For demo purposes, we'll just create a blob URL
+      const objectUrl = URL.createObjectURL(file);
+      setPreviewUrl(objectUrl);
       
-      // Upload the file to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('profile_pictures')
-        .upload(filePath, file);
-        
-      if (uploadError) {
-        throw uploadError;
-      }
-      
-      // Get the public URL
-      const { data } = supabase.storage
-        .from('profile_pictures')
-        .getPublicUrl(filePath);
-        
-      const publicUrl = data.publicUrl;
-      
-      // Update preview
-      setPreviewUrl(publicUrl);
-      
-      // Callback for parent component
-      if (onImageChange) {
-        onImageChange(publicUrl);
-      }
+      // In a real implementation, we would upload to Supabase storage
+      // Simulating server delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       toast({
         title: "Success",
         description: "Profile picture uploaded successfully",
       });
+      
+      // Callback for parent component
+      if (onImageChange) {
+        onImageChange(objectUrl);
+      }
     } catch (error) {
       console.error('Error uploading image:', error);
       toast({
@@ -94,11 +79,6 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      
-      // Create a preview
-      const objectUrl = URL.createObjectURL(file);
-      setPreviewUrl(objectUrl);
-      
       uploadImage(file);
     }
   };
@@ -130,6 +110,7 @@ const ProfilePicture: React.FC<ProfilePictureProps> = ({
     });
     
     setShowAvatarSelector(false);
+    setShowOptions(false);
   };
   
   const getInitials = (userId?: string) => {

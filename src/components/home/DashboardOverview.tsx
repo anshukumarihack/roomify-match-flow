@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
 import { Users, Flame, Badge as BadgeIcon, MessageCircle } from 'lucide-react';
@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import ProfilePicture from '@/components/profile/ProfilePicture';
 
 interface DashboardOverviewProps {
   isLoggedIn: boolean;
@@ -30,10 +31,19 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
   loading 
 }) => {
   const navigate = useNavigate();
+  const [profilePicUrl, setProfilePicUrl] = useState<string | undefined>(undefined);
   
   if (!isLoggedIn) {
     return null;
   }
+  
+  // Mock user ID for demo purposes
+  const mockUserId = 'user-123';
+
+  const handleProfileImageChange = (url: string) => {
+    setProfilePicUrl(url);
+    console.log("Profile image changed:", url);
+  };
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 py-8 px-4 flex-1">
@@ -45,10 +55,12 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               <CardTitle>Your Profile</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center space-y-4">
-              <Avatar className="h-24 w-24 border-4 border-roomify-purple">
-                <AvatarImage src="https://source.unsplash.com/random/200x200?person&profile" />
-                <AvatarFallback className="bg-roomify-purple-light text-white text-2xl">YOU</AvatarFallback>
-              </Avatar>
+              <ProfilePicture
+                userId={mockUserId}
+                imageUrl={profilePicUrl}
+                onImageChange={handleProfileImageChange}
+                size="lg"
+              />
               
               <div className="text-center">
                 <h3 className="text-xl font-semibold">Guest User</h3>
@@ -79,8 +91,8 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full bg-roomify-primary" onClick={() => navigate('/create-profile')}>
-                Complete Your Profile
+              <Button className="w-full bg-roomify-primary" onClick={() => navigate('/settings')}>
+                Manage Your Profile
               </Button>
             </CardFooter>
           </Card>
@@ -137,9 +149,18 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
           
           {/* Recent matches */}
           <Card className="lg:col-span-3">
-            <CardHeader>
-              <CardTitle>Recent Matches</CardTitle>
-              <CardDescription>Your latest compatible roommates</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Recent Matches</CardTitle>
+                <CardDescription>Your latest compatible roommates</CardDescription>
+              </div>
+              <Button 
+                variant="outline" 
+                className="text-roomify-purple border-roomify-purple"
+                onClick={() => navigate('/matches')}
+              >
+                View All ({stats.totalMatches})
+              </Button>
             </CardHeader>
             <CardContent>
               {loading ? (
@@ -151,13 +172,18 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                   {recentMatches.map(match => (
                     <div key={match.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col items-center text-center hover:shadow-md transition-shadow">
                       <Avatar className="h-20 w-20 mb-4">
-                        <AvatarImage src={`https://source.unsplash.com/random/200x200?person&${match.id}`} alt={match.name} />
+                        <AvatarImage src={`https://source.unsplash.com/collection/1346951/150x150?${match.id}`} alt={match.name} />
                         <AvatarFallback className="bg-roomify-purple-light text-white text-xl">
                           {match.name?.substring(0, 2).toUpperCase() || "RM"}
                         </AvatarFallback>
                       </Avatar>
                       <h3 className="font-medium text-roomify-purple">{match.name || "Roommate"}</h3>
-                      <p className="text-sm text-gray-500 mb-3">{match.personality || "Compatible roommate"}</p>
+                      <p className="text-sm text-gray-500 mb-1">{match.personality || "Compatible roommate"}</p>
+                      <div className="mb-3">
+                        <Badge className="bg-roomify-purple/20 text-roomify-purple text-xs">
+                          {match.compatibility || Math.floor(Math.random() * 15) + 85}% Match
+                        </Badge>
+                      </div>
                       <Button 
                         variant="outline" 
                         size="sm"

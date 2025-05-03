@@ -11,13 +11,46 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 interface Match {
   id: string;
   name: string;
-  photoUrl: string;
+  photoUrl?: string;
+  avatarUrl?: string;
   lastActive: string;
   compatibility: number;
   hasUnreadMessages: boolean;
   matchDate: string;
-  avatarUrl?: string;
+  personality?: string;
+  sleep_time?: string;
+  cleanliness?: string;
 }
+
+// Function to generate mock match data
+const generateMockMatches = (count: number): Match[] => {
+  const personalities = ['Introvert', 'Extrovert', 'Ambivert', 'Reserved', 'Outgoing', 'Quiet', 'Sociable'];
+  const sleepTimes = ['Early bird', 'Night owl', 'Flexible', 'Standard'];
+  const cleanlinessLevels = ['Very neat', 'Average', 'Relaxed', 'Minimal', 'Meticulous'];
+  const lastActiveTimes = ['Just now', '5 min ago', '10 min ago', '30 min ago', '1 hour ago', '3 hours ago', 'Yesterday'];
+  const matchDates = ['Just now', 'Today', 'Yesterday', '2 days ago', '3 days ago', 'Last week', '2 weeks ago'];
+  const names = [
+    'Emma Wilson', 'James Rodriguez', 'Sarah Chen', 'Michael Taylor', 'Olivia Brown',
+    'Noah Martinez', 'Sophia Johnson', 'Ethan Williams', 'Ava Jones', 'Liam Garcia',
+    'Isabella Miller', 'Mason Davis', 'Mia Hernandez', 'Jacob Smith', 'Charlotte Wilson',
+    'William Anderson', 'Amelia Thomas', 'Benjamin Moore', 'Abigail Jackson', 'Lucas White',
+    'Emily Harris', 'Alexander Martin', 'Elizabeth Thompson', 'Daniel Garcia', 'Sofia Robinson',
+    'Matthew Lewis', 'Avery Walker', 'Henry Hall', 'Scarlett Young', 'Joseph Allen'
+  ];
+  
+  return Array.from({ length: count }, (_, i) => ({
+    id: `match-${i + 1}`,
+    name: names[i % names.length],
+    avatarUrl: `https://source.unsplash.com/collection/1346951/150x150?${i + 1}`,
+    lastActive: lastActiveTimes[Math.floor(Math.random() * lastActiveTimes.length)],
+    compatibility: Math.floor(Math.random() * 30) + 70, // 70-100% compatibility
+    hasUnreadMessages: Math.random() > 0.7, // 30% chance of having unread messages
+    matchDate: matchDates[Math.floor(Math.random() * matchDates.length)],
+    personality: personalities[Math.floor(Math.random() * personalities.length)],
+    sleep_time: sleepTimes[Math.floor(Math.random() * sleepTimes.length)],
+    cleanliness: cleanlinessLevels[Math.floor(Math.random() * cleanlinessLevels.length)]
+  }));
+};
 
 const MatchList: React.FC = () => {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -31,7 +64,7 @@ const MatchList: React.FC = () => {
         const { data, error } = await supabase
           .from('match')
           .select('*')
-          .limit(10);
+          .limit(25);
           
         if (error) throw error;
         
@@ -40,22 +73,27 @@ const MatchList: React.FC = () => {
           const mappedMatches: Match[] = data.map(match => ({
             id: match.id.toString(),
             name: match.name || 'Unknown',
-            photoUrl: '', // Placeholder, will be replaced by avatarUrl
             lastActive: getRandomLastActive(),
             compatibility: Math.floor(Math.random() * 30) + 70, // Random compatibility between 70-100%
             hasUnreadMessages: Math.random() > 0.7, // 30% chance of having unread messages
             matchDate: getRandomMatchDate(),
-            avatarUrl: `https://source.unsplash.com/random/200x200?person&${match.id}`
+            avatarUrl: `https://source.unsplash.com/collection/1346951/150x150?${match.id}`,
+            personality: match.personality,
+            sleep_time: match.sleep_time?.toString(),
+            cleanliness: match.cleanliness?.toString()
           }));
           
           setMatches(mappedMatches);
         } else {
-          // Fallback to initial data if no matches found
-          setMatches(initialMatches);
+          // Fallback to mock data if no matches found
+          const mockMatches = generateMockMatches(25);
+          setMatches(mockMatches);
         }
       } catch (error) {
         console.error('Error fetching matches:', error);
-        setMatches(initialMatches);
+        // Fallback to mock data on error
+        const mockMatches = generateMockMatches(25);
+        setMatches(mockMatches);
       } finally {
         setLoading(false);
       }
@@ -84,43 +122,9 @@ const MatchList: React.FC = () => {
     return options[Math.floor(Math.random() * options.length)];
   };
 
-  // Initial hardcoded matches as fallback
-  const initialMatches: Match[] = [
-    {
-      id: '1',
-      name: 'Emma Wilson',
-      photoUrl: 'https://source.unsplash.com/random/200x200?portrait&woman&1',
-      lastActive: '2 min ago',
-      compatibility: 95,
-      hasUnreadMessages: true,
-      matchDate: '2 days ago',
-      avatarUrl: 'https://source.unsplash.com/random/200x200?woman&1'
-    },
-    {
-      id: '2',
-      name: 'James Rodriguez',
-      photoUrl: 'https://source.unsplash.com/random/200x200?portrait&man&2',
-      lastActive: '1 hour ago',
-      compatibility: 85,
-      hasUnreadMessages: false,
-      matchDate: '1 day ago',
-      avatarUrl: 'https://source.unsplash.com/random/200x200?man&2'
-    },
-    {
-      id: '3',
-      name: 'Sarah Chen',
-      photoUrl: 'https://source.unsplash.com/random/200x200?portrait&woman&3',
-      lastActive: '3 hours ago',
-      compatibility: 78,
-      hasUnreadMessages: true,
-      matchDate: 'Just now',
-      avatarUrl: 'https://source.unsplash.com/random/200x200?woman&3'
-    }
-  ];
-
   return (
     <div className="container mx-auto p-4 pb-20">
-      <h1 className="text-2xl font-bold mb-6 text-roomify-purple">Your Matches</h1>
+      <h1 className="text-2xl font-bold mb-6 text-roomify-purple">Your Matches ({matches.length})</h1>
       
       {loading ? (
         <div className="flex justify-center py-12">
@@ -149,7 +153,7 @@ const MatchList: React.FC = () => {
                       onClick={() => handleProfileClick(match.id)}
                     >
                       <AvatarImage 
-                        src={match.avatarUrl || match.photoUrl} 
+                        src={match.avatarUrl} 
                         alt={match.name} 
                       />
                       <AvatarFallback className="bg-roomify-purple-light text-white text-xl">
@@ -177,6 +181,25 @@ const MatchList: React.FC = () => {
                           <span className="text-xs text-gray-500">
                             Active {match.lastActive}
                           </span>
+                        </div>
+                        
+                        {/* Additional match details */}
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {match.personality && (
+                            <Badge variant="outline" className="text-xs border-gray-300">
+                              {match.personality}
+                            </Badge>
+                          )}
+                          {match.sleep_time && (
+                            <Badge variant="outline" className="text-xs border-gray-300">
+                              {match.sleep_time}
+                            </Badge>
+                          )}
+                          {match.cleanliness && (
+                            <Badge variant="outline" className="text-xs border-gray-300">
+                              {match.cleanliness}
+                            </Badge>
+                          )}
                         </div>
                       </div>
                       
