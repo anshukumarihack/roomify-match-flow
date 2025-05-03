@@ -31,15 +31,15 @@ const ProfileAvatarDisplay: React.FC<ProfileAvatarDisplayProps> = ({
       className={`relative ${sizeClasses[size]} cursor-pointer group`}
       onClick={onClick}
     >
-      <Avatar className={`${sizeClasses[size]} border-2 border-roomify-purple avatar-glow`}>
-        <AvatarImage src={previewUrl} />
-        <AvatarFallback className="bg-roomify-purple-light text-white">
+      <Avatar className={`${sizeClasses[size]} border-2 border-roomify-purple transition-all duration-300 ${userId ? 'avatar-glow hover:scale-105' : ''}`}>
+        <AvatarImage src={previewUrl} className="object-cover" />
+        <AvatarFallback className="bg-gradient-to-br from-roomify-purple to-roomify-purple-dark text-white">
           {getInitials(userId)}
         </AvatarFallback>
       </Avatar>
       
       {userId && (
-        <div className="absolute inset-0 bg-black bg-opacity-40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute inset-0 bg-black bg-opacity-40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-105">
           <Upload className="h-6 w-6 text-white" />
         </div>
       )}
