@@ -30,6 +30,14 @@ export const useAuth = () => {
   return context;
 };
 
+// Function to generate a consistent avatar URL based on user ID
+const generateAvatarUrl = (userId: string) => {
+  // Using Pravatar for consistent human-like avatars
+  return `https://i.pravatar.cc/300?img=${Math.floor(Math.abs(
+    userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+  ) % 70)}`;
+};
+
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -58,13 +66,13 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     // In a real app, this would validate credentials with an API
     console.log('Login:', { email, password });
     
-    // Create a mock user with a random avatar
+    // Create a mock user with a consistent avatar based on email
     const userId = `user-${Date.now()}`;
     const newUser: User = {
       id: userId,
       name: email.split('@')[0],
       email: email,
-      avatarUrl: `https://i.pravatar.cc/300?u=${userId}`,
+      avatarUrl: generateAvatarUrl(userId),
       preferences: {}
     };
     
@@ -89,13 +97,13 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     // In a real app, this would create a user with an API
     console.log('Signup:', { name, email, password });
     
-    // Create a new user with a random avatar
+    // Create a new user with a consistent avatar
     const userId = `user-${Date.now()}`;
     const newUser: User = {
       id: userId,
       name: name,
       email: email,
-      avatarUrl: `https://i.pravatar.cc/300?u=${userId}`,
+      avatarUrl: generateAvatarUrl(userId),
       preferences: {}
     };
     

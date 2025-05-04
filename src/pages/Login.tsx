@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import LoginForm from '@/components/auth/LoginForm';
 import { useAuth } from '@/context/AuthContext';
+import { motion } from 'framer-motion';
 
 const Login: React.FC = () => {
   const { login, isAuthenticated } = useAuth();
@@ -22,28 +23,60 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 p-4">
-      <div className="max-w-md w-full mx-auto mt-10">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-roomify-purple/5 dark:from-gray-900 dark:to-roomify-purple/20 p-4">
+      <motion.div 
+        className="max-w-md w-full mx-auto mt-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-roomify-purple">Roomify</h1>
-          <p className="text-gray-600 mt-2">Find your perfect roommate match</p>
+          <motion.h1 
+            className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-roomify-purple to-blue-500"
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            Roomify
+          </motion.h1>
+          <motion.p 
+            className="text-gray-600 dark:text-gray-300 mt-2 text-lg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            Find your perfect roommate match
+          </motion.p>
         </div>
         
-        <LoginForm
-          onLogin={handleLogin}
-          onGoogleLogin={handleGoogleLogin}
-          onFacebookLogin={handleFacebookLogin}
-        />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
+          <LoginForm
+            onLogin={handleLogin}
+            onGoogleLogin={handleGoogleLogin}
+            onFacebookLogin={handleFacebookLogin}
+          />
+        </motion.div>
         
-        <div className="mt-8 text-center">
+        <div className="mt-8 flex flex-col items-center space-y-4">
           <Link 
             to="/how-it-works"
-            className="text-roomify-purple hover:text-roomify-purple-dark underline"
+            className="text-roomify-purple hover:text-roomify-purple-dark underline transition-colors duration-200"
           >
             Learn how Roomify works
           </Link>
+          
+          <Link 
+            to="/about"
+            className="text-roomify-purple hover:text-roomify-purple-dark underline transition-colors duration-200"
+          >
+            About Roomify
+          </Link>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Facebook } from 'lucide-react';
+import { Facebook, LogIn, Mail, Shield } from 'lucide-react';
 
 interface LoginFormProps {
   onLogin: (email: string, password: string) => void;
@@ -30,21 +30,24 @@ const LoginForm: React.FC<LoginFormProps> = ({
     setTimeout(() => {
       onLogin(email, password);
       setIsLoading(false);
-    }, 1500);
+    }, 1000);
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto border-roomify-purple-light">
+    <Card className="w-full max-w-md mx-auto border-roomify-purple-light shadow-lg transition-all duration-300 hover:shadow-xl">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl text-center text-roomify-purple">Welcome Back!</CardTitle>
-        <CardDescription className="text-center">
+        <CardTitle className="text-2xl text-center text-gradient-to-r from-roomify-purple to-blue-500">Welcome Back!</CardTitle>
+        <CardDescription className="text-center text-lg">
           Login to find your perfect roommate match
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-base flex items-center gap-2">
+              <Mail className="h-4 w-4 text-roomify-purple" />
+              Email
+            </Label>
             <Input
               id="email"
               type="email"
@@ -52,15 +55,18 @@ const LoginForm: React.FC<LoginFormProps> = ({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="border-roomify-gray"
+              className="border-roomify-gray focus:ring-2 focus:ring-roomify-purple transition-all duration-200 h-11 text-base"
             />
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-base flex items-center gap-2">
+                <Shield className="h-4 w-4 text-roomify-purple" />
+                Password
+              </Label>
               <Link 
                 to="/forgot-password" 
-                className="text-sm text-roomify-blue underline hover:text-roomify-blue-dark"
+                className="text-sm text-roomify-blue underline hover:text-roomify-blue-dark transition-colors"
               >
                 Forgot password?
               </Link>
@@ -72,20 +78,25 @@ const LoginForm: React.FC<LoginFormProps> = ({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="border-roomify-gray"
+              className="border-roomify-gray focus:ring-2 focus:ring-roomify-purple transition-all duration-200 h-11 text-base"
             />
           </div>
           <Button 
             type="submit" 
-            className="w-full bg-roomify-primary hover:bg-roomify-purple-dark transition-colors"
+            className="w-full bg-gradient-to-r from-roomify-purple to-blue-500 hover:from-roomify-purple-dark hover:to-blue-600 transition-all duration-300 h-12 text-lg font-medium"
             disabled={isLoading}
           >
             {isLoading ? (
               <div className="flex items-center">
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                Loading...
+                Signing In...
               </div>
-            ) : 'Sign In'}
+            ) : (
+              <div className="flex items-center justify-center gap-2">
+                <LogIn className="h-5 w-5" />
+                Sign In
+              </div>
+            )}
           </Button>
         </form>
         
@@ -104,7 +115,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
           <Button
             type="button"
             variant="outline"
-            className="border-roomify-gray-dark hover:bg-roomify-gray-light transition-colors"
+            className="border-roomify-gray-dark hover:bg-roomify-gray-light transition-colors h-11"
             onClick={onGoogleLogin}
           >
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -130,7 +141,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
           <Button
             type="button"
             variant="outline"
-            className="border-roomify-gray-dark hover:bg-roomify-gray-light transition-colors"
+            className="border-roomify-gray-dark hover:bg-roomify-gray-light transition-colors h-11"
             onClick={onFacebookLogin}
           >
             <Facebook className="w-5 h-5 mr-2 text-blue-600" />
@@ -138,12 +149,12 @@ const LoginForm: React.FC<LoginFormProps> = ({
           </Button>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-center">
-        <p className="text-sm text-gray-500">
+      <CardFooter className="flex justify-center p-6">
+        <p className="text-base text-gray-600 dark:text-gray-300">
           Don't have an account?{' '}
           <Link 
             to="/signup" 
-            className="text-roomify-blue hover:text-roomify-blue-dark underline"
+            className="text-roomify-purple hover:text-roomify-purple-dark underline font-medium transition-colors"
           >
             Sign up
           </Link>

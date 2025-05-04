@@ -33,8 +33,8 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            {/* Public routes - About page is now the default landing page */}
+            <Route path="/" element={<Navigate to="/about" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/create-profile" element={<ProfileCreationPage />} />
