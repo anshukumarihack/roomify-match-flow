@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from '@/components/ui/use-toast';
@@ -53,17 +52,17 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       setUser(parsedUser);
       setIsAuthenticated(true);
       
-      const isPublicRoute = ['/login', '/signup', '/about', '/how-it-works', '/create-profile'].includes(location.pathname);
+      const isPublicRoute = ['/', '/login', '/signup', '/about', '/how-it-works', '/create-profile'].includes(location.pathname);
       
       // If user has not completed profile setup and not on profile creation page
       if (parsedUser && !parsedUser.profileCompleted && location.pathname !== '/create-profile') {
         navigate('/create-profile');
       } 
       // Don't redirect if already on a protected route or if profile is completed
-      else if (isPublicRoute && parsedUser.profileCompleted) {
+      else if (isPublicRoute && parsedUser.profileCompleted && location.pathname !== '/') {
         navigate('/dashboard');
       }
-    } else if (!['/login', '/signup', '/about', '/how-it-works'].includes(location.pathname)) {
+    } else if (!['/login', '/signup', '/about', '/how-it-works', '/'].includes(location.pathname)) {
       // Redirect to login if no user and trying to access protected route
       navigate('/login');
     }

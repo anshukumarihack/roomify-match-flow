@@ -39,22 +39,6 @@ const ProfileCreationPage: React.FC = () => {
             Set Your Preferences
           </motion.h1>
         </div>
-
-        {user && (
-          <motion.div 
-            className="flex items-center justify-center mb-6"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="flex flex-col items-center">
-              <div className="rounded-full overflow-hidden h-24 w-24 border-4 border-roomify-purple shadow-lg mb-3">
-                <img src={user.avatarUrl} alt="Your avatar" className="h-full w-full object-cover" />
-              </div>
-              <p className="text-gray-600 dark:text-gray-300">Your profile avatar</p>
-            </div>
-          </motion.div>
-        )}
         
         <motion.div
           initial={{ y: 20, opacity: 0 }}
