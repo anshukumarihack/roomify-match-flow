@@ -9,13 +9,10 @@ import { motion } from 'framer-motion';
 
 const ProfileCreationPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, updateUserProfile } = useAuth();
 
   const handleSaveProfile = (profileData: any) => {
-    // Instead of using saveProfile which doesn't exist, we'll just navigate to dashboard
-    // In a real app, you'd want to save this data somewhere
-    console.log('Profile data saved:', profileData);
-    navigate('/dashboard');
+    updateUserProfile(profileData);
   };
 
   const handleBack = () => {
@@ -39,7 +36,7 @@ const ProfileCreationPage: React.FC = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            Create Your Profile
+            Set Your Preferences
           </motion.h1>
         </div>
 

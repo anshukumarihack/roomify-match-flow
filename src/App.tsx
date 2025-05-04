@@ -19,6 +19,7 @@ import AboutPage from "./pages/AboutPage";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import SettingsPage from "./pages/SettingsPage";
 import SwipePage from "./pages/SwipePage";
+import ProfileCreationPage from "./pages/ProfileCreationPage";
 import AppLayout from "./layouts/AppLayout";
 import AuthProvider from "./context/AuthContext";
 
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/signup" element={<Signup />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/how-it-works" element={<HowItWorksPage />} />
+            <Route path="/create-profile" element={<ProfileCreationPage />} />
             
             {/* Protected routes with AppLayout */}
             <Route path="/" element={<AppLayout />}>

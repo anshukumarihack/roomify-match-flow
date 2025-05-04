@@ -12,6 +12,7 @@ const Signup: React.FC = () => {
 
   const handleSignup = (name: string, email: string, password: string) => {
     signUp(name, email, password);
+    // No need to navigate here - AuthContext will handle redirection to profile creation
   };
 
   const handleGoogleSignup = () => {

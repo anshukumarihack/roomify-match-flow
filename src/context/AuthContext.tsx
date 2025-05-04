@@ -9,6 +9,7 @@ interface User {
   email: string;
   avatarUrl: string;
   preferences?: Record<string, any>;
+  profileCompleted?: boolean;
 }
 
 interface AuthContextType {
@@ -17,6 +18,7 @@ interface AuthContextType {
   signUp: (name: string, email: string, password: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
+  updateUserProfile: (profileData: any) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -47,12 +49,18 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   useEffect(() => {
     const savedUser = localStorage.getItem('roomify_user');
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      const parsedUser = JSON.parse(savedUser);
+      setUser(parsedUser);
       setIsAuthenticated(true);
       
-      // Don't redirect if already on a protected route
-      const isPublicRoute = ['/login', '/signup', '/about', '/how-it-works'].includes(location.pathname);
-      if (isPublicRoute) {
+      const isPublicRoute = ['/login', '/signup', '/about', '/how-it-works', '/create-profile'].includes(location.pathname);
+      
+      // If user has not completed profile setup and not on profile creation page
+      if (parsedUser && !parsedUser.profileCompleted && location.pathname !== '/create-profile') {
+        navigate('/create-profile');
+      } 
+      // Don't redirect if already on a protected route or if profile is completed
+      else if (isPublicRoute && parsedUser.profileCompleted) {
         navigate('/dashboard');
       }
     } else if (!['/login', '/signup', '/about', '/how-it-works'].includes(location.pathname)) {
@@ -65,14 +73,36 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     // In a real app, this would validate credentials with an API
     console.log('Login:', { email, password });
     
-    // Create a mock user with a consistent avatar based on email
+    // Try to find existing user in localStorage
+    const savedUser = localStorage.getItem('roomify_user');
+    if (savedUser) {
+      const existingUser = JSON.parse(savedUser);
+      if (existingUser.email === email) {
+        setUser(existingUser);
+        setIsAuthenticated(true);
+        
+        toast({
+          title: "Login successful",
+          description: "Welcome back to Roomify!"
+        });
+        
+        if (!existingUser.profileCompleted) {
+          navigate('/create-profile');
+        } else {
+          navigate('/dashboard');
+        }
+        return;
+      }
+    }
+    
+    // If not found, create a mock user with a consistent avatar based on email
     const userId = `user-${Date.now()}`;
     const newUser: User = {
       id: userId,
       name: email.split('@')[0],
       email: email,
       avatarUrl: generateAvatarUrl(userId),
-      preferences: { completedOnboarding: true }
+      profileCompleted: false
     };
     
     setUser(newUser);
@@ -84,7 +114,8 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       description: "Welcome to Roomify!"
     });
     
-    navigate('/dashboard');
+    // Send new users to create their profile
+    navigate('/create-profile');
   };
   
   const signUp = (name: string, email: string, password: string) => {
@@ -98,7 +129,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       name: name,
       email: email,
       avatarUrl: generateAvatarUrl(userId),
-      preferences: { completedOnboarding: true }
+      profileCompleted: false
     };
     
     setUser(newUser);
@@ -107,10 +138,35 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     
     toast({
       title: "Account created!",
-      description: "Welcome to Roomify!"
+      description: "Let's set up your profile preferences"
     });
     
-    navigate('/dashboard');
+    // Direct them to profile creation page first
+    navigate('/create-profile');
+  };
+  
+  const updateUserProfile = (profileData: any) => {
+    if (user) {
+      const updatedUser = {
+        ...user,
+        preferences: {
+          ...user.preferences,
+          ...profileData
+        },
+        profileCompleted: true
+      };
+      
+      setUser(updatedUser);
+      localStorage.setItem('roomify_user', JSON.stringify(updatedUser));
+      
+      toast({
+        title: "Profile updated",
+        description: "Your preferences have been saved"
+      });
+      
+      // After profile completion, redirect to dashboard
+      navigate('/dashboard');
+    }
   };
   
   const logout = () => {
@@ -132,7 +188,8 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       login, 
       signUp, 
       logout, 
-      isAuthenticated 
+      isAuthenticated,
+      updateUserProfile
     }}>
       {children}
     </AuthContext.Provider>

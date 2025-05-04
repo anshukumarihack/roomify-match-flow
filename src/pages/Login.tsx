@@ -8,10 +8,11 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 
 const Login: React.FC = () => {
-  const { login, isAuthenticated } = useAuth();
+  const { login } = useAuth();
 
   const handleLogin = (email: string, password: string) => {
     login(email, password);
+    // AuthContext will handle the redirection based on profile completion status
   };
 
   const handleGoogleLogin = () => {
