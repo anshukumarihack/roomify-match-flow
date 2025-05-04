@@ -10,8 +10,6 @@ import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import ProfileCreationPage from "./pages/ProfileCreationPage";
-import SwipePage from "./pages/SwipePage";
 import DashboardPage from "./pages/DashboardPage";
 import BadgesPage from "./pages/BadgesPage";
 import MatchesPage from "./pages/MatchesPage";
@@ -37,7 +35,6 @@ const App = () => (
             <Route path="/" element={<Navigate to="/about" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/create-profile" element={<ProfileCreationPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/how-it-works" element={<HowItWorksPage />} />
             

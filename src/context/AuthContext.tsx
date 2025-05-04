@@ -16,7 +16,6 @@ interface AuthContextType {
   login: (email: string, password: string) => void;
   signUp: (name: string, email: string, password: string) => void;
   logout: () => void;
-  saveProfile: (profileData: any) => void;
   isAuthenticated: boolean;
 }
 
@@ -53,7 +52,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       
       // Don't redirect if already on a protected route
       const isPublicRoute = ['/login', '/signup', '/about', '/how-it-works'].includes(location.pathname);
-      if (isPublicRoute && location.pathname !== '/create-profile') {
+      if (isPublicRoute) {
         navigate('/dashboard');
       }
     } else if (!['/login', '/signup', '/about', '/how-it-works'].includes(location.pathname)) {
@@ -73,7 +72,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       name: email.split('@')[0],
       email: email,
       avatarUrl: generateAvatarUrl(userId),
-      preferences: {}
+      preferences: { completedOnboarding: true }
     };
     
     setUser(newUser);
@@ -82,15 +81,10 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     
     toast({
       title: "Login successful",
-      description: "Welcome back to Roomify!"
+      description: "Welcome to Roomify!"
     });
     
-    // Redirect new users to profile creation
-    if (!newUser.preferences || Object.keys(newUser.preferences).length === 0) {
-      navigate('/create-profile');
-    } else {
-      navigate('/dashboard');
-    }
+    navigate('/dashboard');
   };
   
   const signUp = (name: string, email: string, password: string) => {
@@ -104,7 +98,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
       name: name,
       email: email,
       avatarUrl: generateAvatarUrl(userId),
-      preferences: {}
+      preferences: { completedOnboarding: true }
     };
     
     setUser(newUser);
@@ -113,10 +107,10 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     
     toast({
       title: "Account created!",
-      description: "Let's set up your profile"
+      description: "Welcome to Roomify!"
     });
     
-    navigate('/create-profile');
+    navigate('/dashboard');
   };
   
   const logout = () => {
@@ -132,29 +126,12 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     navigate('/login');
   };
   
-  const saveProfile = (profileData: any) => {
-    if (user) {
-      const updatedUser = {
-        ...user,
-        preferences: profileData
-      };
-      setUser(updatedUser);
-      localStorage.setItem('roomify_user', JSON.stringify(updatedUser));
-      
-      toast({
-        title: "Profile saved!",
-        description: "You earned +100 XP!"
-      });
-    }
-  };
-  
   return (
     <AuthContext.Provider value={{ 
       user, 
       login, 
       signUp, 
       logout, 
-      saveProfile, 
       isAuthenticated 
     }}>
       {children}

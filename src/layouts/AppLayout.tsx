@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const AppLayout: React.FC = () => {
   const navigate = useNavigate();
@@ -50,23 +51,39 @@ const AppLayout: React.FC = () => {
         </h1>
         
         <div className="flex items-center space-x-2">
-          {user && (
-            <Link to="/settings" className="flex items-center">
-              <Avatar className="h-8 w-8 border-2 border-roomify-purple/30 hover:border-roomify-purple transition-colors">
-                <AvatarImage src={user.avatarUrl} alt={user.name} />
-                <AvatarFallback>{user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
-              </Avatar>
-            </Link>
-          )}
-          
-          <Button 
-            variant="ghost" 
-            className="p-2 rounded-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-            onClick={handleLogout}
-            aria-label="Log out"
-          >
-            <LogOut className="h-5 w-5" />
-          </Button>
+          <TooltipProvider>
+            {user && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link to="/settings" className="flex items-center">
+                    <Avatar className="h-8 w-8 border-2 border-roomify-purple/30 hover:border-roomify-purple transition-colors">
+                      <AvatarImage src={user.avatarUrl} alt={user.name} />
+                      <AvatarFallback>{user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Profile Settings</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+            
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className="p-2 rounded-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  onClick={handleLogout}
+                  aria-label="Log out"
+                >
+                  <LogOut className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Log out</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </motion.header>
       

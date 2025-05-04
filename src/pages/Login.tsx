@@ -1,9 +1,11 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import LoginForm from '@/components/auth/LoginForm';
 import { useAuth } from '@/context/AuthContext';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 const Login: React.FC = () => {
   const { login, isAuthenticated } = useAuth();
@@ -24,8 +26,21 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-roomify-purple/5 dark:from-gray-900 dark:to-roomify-purple/20 p-4">
+      <div className="container mx-auto px-4 pt-4 pb-8">
+        <Link to="/about">
+          <Button 
+            variant="ghost" 
+            className="p-2 mb-6 rounded-full hover:bg-roomify-purple/10"
+            aria-label="Back to About"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            <span className="ml-2">Back to About</span>
+          </Button>
+        </Link>
+      </div>
+      
       <motion.div 
-        className="max-w-md w-full mx-auto mt-10"
+        className="max-w-md w-full mx-auto"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -53,6 +68,7 @@ const Login: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
+          className="bg-white dark:bg-gray-800 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700"
         >
           <LoginForm
             onLogin={handleLogin}
@@ -62,18 +78,21 @@ const Login: React.FC = () => {
         </motion.div>
         
         <div className="mt-8 flex flex-col items-center space-y-4">
+          <p className="text-center text-gray-600 dark:text-gray-300">
+            Don't have an account?{' '}
+            <Link 
+              to="/signup"
+              className="text-roomify-purple hover:text-roomify-purple-dark font-medium transition-colors"
+            >
+              Sign up
+            </Link>
+          </p>
+          
           <Link 
             to="/how-it-works"
             className="text-roomify-purple hover:text-roomify-purple-dark underline transition-colors duration-200"
           >
             Learn how Roomify works
-          </Link>
-          
-          <Link 
-            to="/about"
-            className="text-roomify-purple hover:text-roomify-purple-dark underline transition-colors duration-200"
-          >
-            About Roomify
           </Link>
         </div>
       </motion.div>
