@@ -18,6 +18,7 @@ import MessageDetailPage from "./pages/MessageDetailPage";
 import AboutPage from "./pages/AboutPage";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import SettingsPage from "./pages/SettingsPage";
+import SwipePage from "./pages/SwipePage";
 import AppLayout from "./layouts/AppLayout";
 import AuthProvider from "./context/AuthContext";
 
