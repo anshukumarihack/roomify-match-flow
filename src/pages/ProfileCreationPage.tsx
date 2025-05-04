@@ -2,20 +2,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProfileCreation from '@/components/profile/ProfileCreation';
-import { toast } from '@/components/ui/use-toast';
+import { useAuth } from '@/context/AuthContext';
 
 const ProfileCreationPage: React.FC = () => {
   const navigate = useNavigate();
+  const { saveProfile } = useAuth();
 
   const handleSaveProfile = (profileData: any) => {
-    // In a real app, this would call an API
-    console.log('Profile data:', profileData);
-    
-    toast({
-      title: "Profile created!",
-      description: "You earned +100 XP!"
-    });
-    
+    saveProfile(profileData);
     navigate('/dashboard');
   };
 

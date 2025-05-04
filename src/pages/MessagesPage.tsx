@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Search } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuth } from '@/context/AuthContext';
 
 interface Conversation {
   id: string;
@@ -17,93 +17,86 @@ interface Conversation {
   avatarUrl?: string;
 }
 
-const initialConversations: Conversation[] = [
-  {
-    id: '1',
-    name: 'Emma Wilson',
-    photoUrl: 'https://source.unsplash.com/random/200x200?portrait&woman&1',
-    lastMessage: "I'm looking at downtown or the university area. My budget is around $800/month for my share.",
-    timestamp: new Date(Date.now() - 72000000),
-    unreadCount: 2,
-    avatarUrl: 'https://source.unsplash.com/random/200x200?woman&1'
-  },
-  {
-    id: '2',
-    name: 'James Rodriguez',
-    photoUrl: 'https://source.unsplash.com/random/200x200?portrait&man&2',
-    lastMessage: "I love coding, watching movies, and hiking on weekends. How about you?",
-    timestamp: new Date(Date.now() - 36000000),
-    unreadCount: 0,
-    avatarUrl: 'https://source.unsplash.com/random/200x200?man&2'
-  },
-  {
-    id: '3',
-    name: 'Sarah Chen',
-    photoUrl: 'https://source.unsplash.com/random/200x200?portrait&woman&3',
-    lastMessage: "Hey! Just matched with you and thought I'd say hi!",
-    timestamp: new Date(Date.now() - 1800000),
-    unreadCount: 1,
-    avatarUrl: 'https://source.unsplash.com/random/200x200?woman&3'
-  }
-];
-
 const MessagesPage: React.FC = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
   
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        // Try to get matches from Supabase
-        const { data, error } = await supabase
-          .from('match')
-          .select('*')
-          .limit(10);
-          
-        if (error) throw error;
+        // Since we're showing only top 5 matches now
+        const mockMatches = [
+          {
+            id: '1',
+            name: 'Emma Wilson',
+            compatibility: 98,
+            lastMessage: "I'm looking at downtown or the university area. My budget is around $800/month for my share.",
+            timestamp: new Date(Date.now() - 72000000),
+            unreadCount: 2,
+            avatarUrl: 'https://i.pravatar.cc/300?u=emma-wilson'
+          },
+          {
+            id: '2',
+            name: 'James Rodriguez',
+            compatibility: 95,
+            lastMessage: "I love coding, watching movies, and hiking on weekends. How about you?",
+            timestamp: new Date(Date.now() - 36000000),
+            unreadCount: 0,
+            avatarUrl: 'https://i.pravatar.cc/300?u=james-rodriguez'
+          },
+          {
+            id: '3',
+            name: 'Sarah Chen',
+            compatibility: 92,
+            lastMessage: "Hey! Just matched with you and thought I'd say hi!",
+            timestamp: new Date(Date.now() - 1800000),
+            unreadCount: 1,
+            avatarUrl: 'https://i.pravatar.cc/300?u=sarah-chen'
+          },
+          {
+            id: '4',
+            name: 'Michael Johnson',
+            compatibility: 91,
+            lastMessage: "What areas of the city are you interested in?",
+            timestamp: new Date(Date.now() - 86400000),
+            unreadCount: 0,
+            avatarUrl: 'https://i.pravatar.cc/300?u=michael-johnson'
+          },
+          {
+            id: '5',
+            name: 'Sophia Garcia',
+            compatibility: 89,
+            lastMessage: "I'm also looking for a place with good public transportation access.",
+            timestamp: new Date(Date.now() - 150000000),
+            unreadCount: 3,
+            avatarUrl: 'https://i.pravatar.cc/300?u=sophia-garcia'
+          }
+        ];
         
-        if (data && data.length > 0) {
-          // Map Supabase data to our Conversation interface
-          const mappedConversations: Conversation[] = data.map(match => ({
-            id: match.id.toString(),
-            name: match.name || 'Unknown',
-            photoUrl: '',
-            lastMessage: generateRandomMessage(match.interests || ''),
-            timestamp: new Date(Date.now() - Math.floor(Math.random() * 172800000)), // Random time in last 48h
-            unreadCount: Math.floor(Math.random() * 3), // 0-2 unread messages
-            avatarUrl: `https://source.unsplash.com/random/200x200?person&${match.id}`
-          }));
-          
-          setConversations(mappedConversations);
-        } else {
-          // Fallback to initial data if no matches found
-          setConversations(initialConversations);
-        }
+        // Convert to conversations format
+        const mappedConversations: Conversation[] = mockMatches.map(match => ({
+          id: match.id,
+          name: match.name,
+          photoUrl: match.avatarUrl,
+          lastMessage: match.lastMessage,
+          timestamp: match.timestamp,
+          unreadCount: match.unreadCount,
+          avatarUrl: match.avatarUrl
+        }));
+        
+        setConversations(mappedConversations);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching conversations:', error);
-        setConversations(initialConversations);
-      } finally {
         setLoading(false);
       }
     };
     
     fetchMatches();
-  }, []);
+  }, [user]);
   
-  const generateRandomMessage = (interests: string): string => {
-    const messages = [
-      `I enjoy ${interests.split(',')[0]} too! What else do you like doing?`,
-      "Hey there! When are you looking to move in?",
-      "I'm also looking for a place in that area. What's your budget?",
-      "Nice to connect! Do you prefer a furnished or unfurnished place?",
-      "Hey! Just matched with you and thought I'd say hi!",
-      "I love your profile! We seem to have a lot in common.",
-    ];
-    
-    return messages[Math.floor(Math.random() * messages.length)];
-  };
-
   const filteredConversations = conversations.filter(convo =>
     convo.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -161,7 +154,7 @@ const MessagesPage: React.FC = () => {
                     <div className="relative">
                       <Avatar className="h-14 w-14">
                         <AvatarImage 
-                          src={conversation.avatarUrl || conversation.photoUrl} 
+                          src={conversation.avatarUrl} 
                           alt={conversation.name} 
                           className="object-cover"
                         />

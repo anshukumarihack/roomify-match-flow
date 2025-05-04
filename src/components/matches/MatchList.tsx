@@ -1,232 +1,151 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { MessageCircle, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { MessageCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
-interface Match {
+interface MatchProfile {
   id: string;
   name: string;
-  photoUrl?: string;
-  avatarUrl?: string;
-  lastActive: string;
+  age: number;
   compatibility: number;
-  hasUnreadMessages: boolean;
-  matchDate: string;
-  personality?: string;
-  sleep_time?: string;
-  cleanliness?: string;
+  interests: string;
+  avatarUrl: string;
+  lastActive: string;
 }
 
-// Function to generate mock match data
-const generateMockMatches = (count: number): Match[] => {
-  const personalities = ['Introvert', 'Extrovert', 'Ambivert', 'Reserved', 'Outgoing', 'Quiet', 'Sociable'];
-  const sleepTimes = ['Early bird', 'Night owl', 'Flexible', 'Standard'];
-  const cleanlinessLevels = ['Very neat', 'Average', 'Relaxed', 'Minimal', 'Meticulous'];
-  const lastActiveTimes = ['Just now', '5 min ago', '10 min ago', '30 min ago', '1 hour ago', '3 hours ago', 'Yesterday'];
-  const matchDates = ['Just now', 'Today', 'Yesterday', '2 days ago', '3 days ago', 'Last week', '2 weeks ago'];
-  const names = [
-    'Emma Wilson', 'James Rodriguez', 'Sarah Chen', 'Michael Taylor', 'Olivia Brown',
-    'Noah Martinez', 'Sophia Johnson', 'Ethan Williams', 'Ava Jones', 'Liam Garcia',
-    'Isabella Miller', 'Mason Davis', 'Mia Hernandez', 'Jacob Smith', 'Charlotte Wilson',
-    'William Anderson', 'Amelia Thomas', 'Benjamin Moore', 'Abigail Jackson', 'Lucas White',
-    'Emily Harris', 'Alexander Martin', 'Elizabeth Thompson', 'Daniel Garcia', 'Sofia Robinson',
-    'Matthew Lewis', 'Avery Walker', 'Henry Hall', 'Scarlett Young', 'Joseph Allen'
-  ];
-  
-  return Array.from({ length: count }, (_, i) => ({
-    id: `match-${i + 1}`,
-    name: names[i % names.length],
-    avatarUrl: `https://i.pravatar.cc/150?u=${i + 1}${Date.now()}`, // Using pravatar for random realistic avatars
-    lastActive: lastActiveTimes[Math.floor(Math.random() * lastActiveTimes.length)],
-    compatibility: Math.floor(Math.random() * 30) + 70, // 70-100% compatibility
-    hasUnreadMessages: Math.random() > 0.7, // 30% chance of having unread messages
-    matchDate: matchDates[Math.floor(Math.random() * matchDates.length)],
-    personality: personalities[Math.floor(Math.random() * personalities.length)],
-    sleep_time: sleepTimes[Math.floor(Math.random() * sleepTimes.length)],
-    cleanliness: cleanlinessLevels[Math.floor(Math.random() * cleanlinessLevels.length)]
-  }));
-};
-
 const MatchList: React.FC = () => {
-  const [matches, setMatches] = useState<Match[]>([]);
+  const [matches, setMatches] = useState<MatchProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
+  const { user } = useAuth();
+  
   useEffect(() => {
-    const fetchMatches = async () => {
-      try {
-        // Try to get matches from Supabase
-        const { data, error } = await supabase
-          .from('match')
-          .select('*')
-          .limit(5);
-          
-        if (error) throw error;
-        
-        if (data && data.length > 0) {
-          // Map Supabase data to our Match interface
-          const mappedMatches: Match[] = data.map(match => ({
-            id: match.id.toString(),
-            name: match.name || 'Unknown',
-            lastActive: getRandomLastActive(),
-            compatibility: Math.floor(Math.random() * 30) + 70, // Random compatibility between 70-100%
-            hasUnreadMessages: Math.random() > 0.7, // 30% chance of having unread messages
-            matchDate: getRandomMatchDate(),
-            avatarUrl: `https://i.pravatar.cc/150?u=${match.id}${Date.now()}`, // Using pravatar for realistic avatars
-            personality: match.personality,
-            sleep_time: match.sleep_time?.toString(),
-            cleanliness: match.cleanliness?.toString()
-          }));
-          
-          setMatches(mappedMatches);
-        } else {
-          // Fallback to mock data if no matches found - only show top 5 matches
-          const mockMatches = generateMockMatches(5);
-          // Sort by compatibility in descending order to show best matches first
-          mockMatches.sort((a, b) => b.compatibility - a.compatibility);
-          setMatches(mockMatches);
-        }
-      } catch (error) {
-        console.error('Error fetching matches:', error);
-        // Fallback to mock data on error - only show top 5 matches
-        const mockMatches = generateMockMatches(5);
-        // Sort by compatibility in descending order to show best matches first
-        mockMatches.sort((a, b) => b.compatibility - a.compatibility);
-        setMatches(mockMatches);
-      } finally {
-        setLoading(false);
+    // Top 5 best matches
+    const topMatches: MatchProfile[] = [
+      {
+        id: '1',
+        name: 'Emma Wilson',
+        age: 26,
+        compatibility: 98,
+        interests: 'Reading, Hiking, Cooking',
+        avatarUrl: 'https://i.pravatar.cc/300?u=emma-wilson',
+        lastActive: 'Just now'
+      },
+      {
+        id: '2',
+        name: 'James Rodriguez',
+        age: 29,
+        compatibility: 95,
+        interests: 'Gaming, Movies, Technology',
+        avatarUrl: 'https://i.pravatar.cc/300?u=james-rodriguez',
+        lastActive: '5 min ago'
+      },
+      {
+        id: '3',
+        name: 'Sarah Chen',
+        age: 24,
+        compatibility: 92,
+        interests: 'Music, Art, Travel',
+        avatarUrl: 'https://i.pravatar.cc/300?u=sarah-chen',
+        lastActive: '2 hours ago'
+      },
+      {
+        id: '4',
+        name: 'Michael Johnson',
+        age: 27,
+        compatibility: 91,
+        interests: 'Sports, Cooking, Photography',
+        avatarUrl: 'https://i.pravatar.cc/300?u=michael-johnson',
+        lastActive: '1 day ago'
+      },
+      {
+        id: '5',
+        name: 'Sophia Garcia',
+        age: 25,
+        compatibility: 89,
+        interests: 'Yoga, Reading, Dancing',
+        avatarUrl: 'https://i.pravatar.cc/300?u=sophia-garcia',
+        lastActive: '2 days ago'
       }
-    };
+    ];
     
-    fetchMatches();
-  }, []);
+    setMatches(topMatches);
+    setLoading(false);
+  }, [user]);
 
-  // Helper function to generate random last active times
-  const getRandomLastActive = (): string => {
-    const options = ['Just now', '5 min ago', '1 hour ago', '3 hours ago', 'Yesterday'];
-    return options[Math.floor(Math.random() * options.length)];
+  const handleMessage = (id: string) => {
+    navigate(`/messages/${id}`);
   };
-
-  // Helper function to generate random match dates
-  const getRandomMatchDate = (): string => {
-    const options = ['Just now', 'Today', 'Yesterday', '2 days ago', 'Last week'];
-    return options[Math.floor(Math.random() * options.length)];
-  };
-
+  
+  if (loading) {
+    return (
+      <div className="container mx-auto p-4 flex justify-center items-center h-64">
+        <div className="w-12 h-12 border-4 border-roomify-purple-light border-t-roomify-purple rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+  
   return (
     <div className="container mx-auto p-4 pb-20">
-      <h1 className="text-2xl font-bold mb-6 text-roomify-purple">Your Best Matches</h1>
+      <h1 className="text-2xl font-bold mb-6 text-roomify-purple">Your Top Matches</h1>
       
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="w-12 h-12 border-4 border-roomify-purple-light border-t-roomify-purple rounded-full animate-spin"></div>
-        </div>
-      ) : matches.length === 0 ? (
+      {matches.length === 0 ? (
         <div className="text-center py-12">
           <h2 className="text-xl font-semibold mb-2">No matches yet</h2>
-          <p className="text-gray-600 mb-6">Start swiping to find your perfect roommate!</p>
-          <Button 
-            onClick={() => navigate('/swipe')}
-            className="bg-roomify-primary hover:bg-roomify-purple-dark"
-          >
-            Find Matches
-          </Button>
+          <p className="text-gray-600 dark:text-gray-400">
+            Start swiping to find your perfect roommate match!
+          </p>
         </div>
       ) : (
         <div className="space-y-4">
-          {matches.map(match => (
-            <Card key={match.id} className="overflow-hidden hover:shadow-md transition-shadow">
-              <CardContent className="p-0">
-                <div className="flex items-center">
-                  <div className="relative">
-                    <Avatar 
-                      className="h-24 w-24 cursor-pointer rounded-none"
-                      onClick={() => navigate(`/profile/${match.id}`)}
-                    >
-                      <AvatarImage 
-                        src={match.avatarUrl} 
-                        alt={match.name} 
-                      />
-                      <AvatarFallback className="bg-roomify-purple-light text-white text-xl">
-                        {match.name.substring(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    
-                    {match.matchDate === 'Just now' && (
-                      <div className="absolute top-0 left-0 bg-roomify-green text-white text-xs px-2 py-1">
-                        New Match!
-                      </div>
-                    )}
-                  </div>
+          {matches.map((match) => (
+            <Card key={match.id} className="w-full hover:shadow-md transition-shadow">
+              <CardContent className="p-4">
+                <div className="flex items-start">
+                  <Avatar className="h-20 w-20 rounded-xl">
+                    <AvatarImage src={match.avatarUrl} alt={match.name} />
+                    <AvatarFallback className="bg-roomify-purple-light text-white">
+                      {match.name.substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
                   
-                  <div className="flex-1 p-4">
+                  <div className="ml-4 flex-1">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="font-semibold text-lg text-roomify-purple" onClick={() => navigate(`/profile/${match.id}`)} style={{cursor: 'pointer'}}>
-                          {match.name}
-                        </h3>
-                        <div className="flex items-center mt-1">
-                          <Badge className="mr-2 bg-roomify-purple-light text-white">
-                            {match.compatibility}% Match
-                          </Badge>
-                          <span className="text-xs text-gray-500">
-                            Active {match.lastActive}
-                          </span>
+                        <div className="flex items-center">
+                          <h3 className="font-semibold text-lg text-roomify-purple">{match.name}</h3>
+                          <span className="text-gray-400 ml-2">{match.age}</span>
                         </div>
                         
-                        {/* Additional match details */}
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {match.personality && (
-                            <Badge variant="outline" className="text-xs border-gray-300">
-                              {match.personality}
-                            </Badge>
-                          )}
-                          {match.sleep_time && (
-                            <Badge variant="outline" className="text-xs border-gray-300">
-                              {match.sleep_time}
-                            </Badge>
-                          )}
-                          {match.cleanliness && (
-                            <Badge variant="outline" className="text-xs border-gray-300">
-                              {match.cleanliness}
-                            </Badge>
-                          )}
+                        <div className="flex mt-1 mb-2">
+                          <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
+                            {match.compatibility}% Match
+                          </Badge>
+                        </div>
+                        
+                        <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          Interests: {match.interests}
                         </div>
                       </div>
                       
-                      <div className="flex space-x-2">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="text-yellow-500 hover:text-yellow-600 hover:bg-yellow-50 rounded-full p-2"
-                          title="Add to favorites"
-                        >
-                          <Star className="h-5 w-5" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => navigate(`/messages/${match.id}`)}
-                          className="bg-roomify-primary hover:bg-roomify-purple-dark rounded-full relative"
-                        >
-                          <MessageCircle className="h-5 w-5" />
-                          {match.hasUnreadMessages && (
-                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                              !
-                            </span>
-                          )}
-                        </Button>
+                      <div className="text-xs text-gray-500 whitespace-nowrap">
+                        {match.lastActive}
                       </div>
                     </div>
                     
-                    <div className="mt-2">
-                      <p className="text-xs text-gray-500">
-                        Matched {match.matchDate}
-                      </p>
+                    <div className="mt-3 flex justify-end">
+                      <Button 
+                        className="bg-roomify-primary hover:bg-roomify-purple-dark flex items-center"
+                        onClick={() => handleMessage(match.id)}
+                      >
+                        <MessageCircle className="h-4 w-4 mr-2" />
+                        Message
+                      </Button>
                     </div>
                   </div>
                 </div>

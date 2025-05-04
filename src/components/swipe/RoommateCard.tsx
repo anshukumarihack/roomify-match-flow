@@ -1,9 +1,11 @@
 
-import React from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { Star } from 'lucide-react';
+import React, { useState } from 'react';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { X, Heart, User, Home, Clock, Utensils, Briefcase, Activity } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export interface RoommateProfile {
   id: string;
@@ -11,230 +13,130 @@ export interface RoommateProfile {
   age: number;
   occupation: string;
   bio: string;
-  distance: number;
   compatibility: number;
+  personality: string;
   sleepSchedule: string;
-  cleanliness: number;
-  smoking: string;
-  pets: string;
-  dietaryPreferences: string[];
-  photoUrls: string[];
-  xpValue: number;
-  avatarUrl: string; // Changed to required for random avatars
+  cleanliness: string;
+  workSchedule: string;
+  dietPreference: string;
+  interests: string;
+  avatarUrl: string;
+  location: string;
 }
 
 interface RoommateCardProps {
   profile: RoommateProfile;
-  onSwipe: (direction: 'left' | 'right', profile: RoommateProfile) => void;
-  isSuperSwipe?: boolean;
+  onLike: () => void;
+  onReject: () => void;
 }
 
-const RoommateCard: React.FC<RoommateCardProps> = ({ 
-  profile, 
-  onSwipe,
-  isSuperSwipe = false
-}) => {
-  const [startX, setStartX] = React.useState(0);
-  const [offsetX, setOffsetX] = React.useState(0);
-  const [isDragging, setIsDragging] = React.useState(false);
-  const cardRef = React.useRef<HTMLDivElement>(null);
-
-  const handleStart = (clientX: number) => {
-    setStartX(clientX);
-    setIsDragging(true);
+const RoommateCard: React.FC<RoommateCardProps> = ({ profile, onLike, onReject }) => {
+  const [showDetails, setShowDetails] = useState(false);
+  
+  const compatibilityColor = profile.compatibility >= 90 
+    ? 'text-green-500' 
+    : profile.compatibility >= 80 
+      ? 'text-blue-500' 
+      : 'text-yellow-500';
+  
+  const toggleDetails = () => {
+    setShowDetails(!showDetails);
   };
-
-  const handleMove = (clientX: number) => {
-    if (!isDragging) return;
-    
-    const newOffsetX = clientX - startX;
-    setOffsetX(newOffsetX);
-    
-    if (cardRef.current) {
-      const rotation = newOffsetX * 0.1; // Adjust for desired rotation amount
-      cardRef.current.style.transform = `translateX(${newOffsetX}px) rotate(${rotation}deg)`;
-      
-      // Adjust opacity based on swipe direction
-      if (newOffsetX > 0) {
-        cardRef.current.querySelector('.like-overlay')?.classList.add('opacity-100');
-        cardRef.current.querySelector('.pass-overlay')?.classList.remove('opacity-100');
-      } else if (newOffsetX < 0) {
-        cardRef.current.querySelector('.pass-overlay')?.classList.add('opacity-100');
-        cardRef.current.querySelector('.like-overlay')?.classList.remove('opacity-100');
-      } else {
-        cardRef.current.querySelector('.like-overlay')?.classList.remove('opacity-100');
-        cardRef.current.querySelector('.pass-overlay')?.classList.remove('opacity-100');
-      }
-    }
-  };
-
-  const handleEnd = () => {
-    if (!isDragging) return;
-    
-    setIsDragging(false);
-    
-    // Determine swipe direction based on offset magnitude
-    if (Math.abs(offsetX) > 100) {
-      const direction = offsetX > 0 ? 'right' : 'left';
-      
-      // Add the appropriate swipe animation class
-      if (cardRef.current) {
-        cardRef.current.classList.add(direction === 'right' ? 'card-swipe-right' : 'card-swipe-left');
-      }
-      
-      // Call the onSwipe callback after the animation has time to play
-      setTimeout(() => {
-        onSwipe(direction, profile);
-      }, 300);
-    } else {
-      // Reset card position if swipe wasn't strong enough
-      if (cardRef.current) {
-        cardRef.current.style.transform = '';
-        cardRef.current.querySelector('.like-overlay')?.classList.remove('opacity-100');
-        cardRef.current.querySelector('.pass-overlay')?.classList.remove('opacity-100');
-      }
-      setOffsetX(0);
-    }
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    handleStart(e.touches[0].clientX);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    handleMove(e.touches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    handleEnd();
-  };
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    handleStart(e.clientX);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    handleMove(e.clientX);
-  };
-
-  const handleMouseUp = () => {
-    handleEnd();
-  };
-
-  const handleMouseLeave = () => {
-    if (isDragging) {
-      handleEnd();
-    }
-  };
-
-  const renderCompatibilityBadge = () => {
-    let color = "bg-red-500";
-    
-    if (profile.compatibility >= 90) {
-      color = "bg-green-500";
-    } else if (profile.compatibility >= 70) {
-      color = "bg-yellow-500";
-    } else if (profile.compatibility >= 50) {
-      color = "bg-orange-500";
-    }
-    
-    return (
-      <div className={`absolute top-4 right-4 ${color} text-white rounded-full px-3 py-1 font-semibold text-sm`}>
-        {profile.compatibility}% Match
-      </div>
-    );
-  };
-
-  // Lifestyle tags
-  const lifestyleTags = [
-    profile.sleepSchedule === 'early-bird' ? 'Early Bird' : 
-      profile.sleepSchedule === 'night-owl' ? 'Night Owl' : 'Mixed Schedule',
-    profile.cleanliness >= 4 ? 'Neat' : 
-      profile.cleanliness <= 2 ? 'Relaxed' : 'Average Cleanliness',
-    profile.smoking === 'non-smoker' ? 'Non-Smoker' : 
-      profile.smoking === 'outside-only' ? 'Smokes Outside' : 'Smoker',
-    profile.pets === 'has-pets' ? 'Has Pets' : 
-      profile.pets === 'no-pets' ? 'No Pets' : 'Wants Pets',
-    ...profile.dietaryPreferences.map(pref => 
-      pref.charAt(0).toUpperCase() + pref.slice(1)
-    )
-  ];
-
+  
   return (
-    <Card
-      ref={cardRef}
-      className="w-full max-w-lg mx-auto overflow-hidden relative shadow-xl transition-transform bg-white dark:bg-gray-900 border-none"
-      style={{ 
-        transition: isDragging ? 'none' : 'transform 0.3s ease-out',
-        height: '75vh',
-        maxHeight: '700px',
-      }}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseLeave}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
-      {/* Like overlay */}
-      <div className="like-overlay absolute inset-0 bg-green-500 bg-opacity-30 z-10 opacity-0 transition-opacity flex items-center justify-center">
-        <div className="transform rotate-[-30deg] border-4 border-white rounded-lg px-5 py-2">
-          <span className="text-white text-4xl font-bold tracking-wide">LIKE</span>
-        </div>
-      </div>
-      
-      {/* Pass overlay */}
-      <div className="pass-overlay absolute inset-0 bg-red-500 bg-opacity-30 z-10 opacity-0 transition-opacity flex items-center justify-center">
-        <div className="transform rotate-[30deg] border-4 border-white rounded-lg px-5 py-2">
-          <span className="text-white text-4xl font-bold tracking-wide">PASS</span>
-        </div>
-      </div>
-      
-      {/* XP Value indicator */}
-      <div className="absolute top-4 left-4 bg-roomify-purple-light text-white rounded-full p-1 z-20 flex items-center">
-        <span className="text-xs font-medium mx-1">+{profile.xpValue} XP</span>
-      </div>
-      
-      {/* Super swipe star */}
-      {isSuperSwipe && (
-        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30 animate-pulse">
-          <div className="bg-yellow-400 rounded-full p-6 animate-spin-slow">
-            <Star className="w-12 h-12 text-white" />
-          </div>
-        </div>
-      )}
-
-      {/* Avatar display */}
-      <div className="h-4/6 relative bg-gray-100 flex items-center justify-center">
-        <Avatar className="h-64 w-64 rounded-full border-4 border-roomify-purple avatar-glow">
-          <AvatarImage src={profile.avatarUrl} alt={profile.name} className="object-cover" />
-          <AvatarFallback className="text-4xl bg-roomify-purple-light text-white">
-            {profile.name.substring(0, 2).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
-        {renderCompatibilityBadge()}
-      </div>
-
-      <CardContent className="p-4 flex flex-col space-y-3">
-        <div>
+    <Card className="w-full overflow-hidden h-full shadow-lg border border-gray-200 dark:border-gray-700">
+      <div className="relative h-96 cursor-pointer" onClick={toggleDetails}>
+        <img 
+          src={profile.avatarUrl}
+          alt={profile.name}
+          className="w-full h-full object-cover"
+        />
+        
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-roomify-purple">{profile.name}, {profile.age}</h2>
-            <span className="text-gray-500 text-sm">{profile.distance} miles away</span>
+            <div>
+              <h3 className="text-white text-xl font-bold">{profile.name}, {profile.age}</h3>
+              <p className="text-white/80">{profile.occupation}</p>
+              <p className="text-white/60 text-sm">{profile.location}</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-full px-3 py-1 flex items-center">
+              <span className={`text-lg font-bold ${compatibilityColor}`}>{profile.compatibility}%</span>
+              <span className="text-xs ml-1">match</span>
+            </div>
           </div>
-          <p className="text-gray-700 dark:text-gray-300">{profile.occupation}</p>
+        </div>
+      </div>
+      
+      <CardContent className={cn(
+        "transition-all duration-300 overflow-hidden",
+        showDetails ? "max-h-[500px] p-4" : "max-h-0 p-0"
+      )}>
+        <h4 className="font-semibold mb-2">Bio</h4>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">{profile.bio}</p>
+        
+        <div className="grid grid-cols-2 gap-3">
+          <div className="flex items-center">
+            <User className="h-4 w-4 mr-2 text-roomify-purple" />
+            <span className="text-sm">{profile.personality}</span>
+          </div>
+          <div className="flex items-center">
+            <Clock className="h-4 w-4 mr-2 text-roomify-purple" />
+            <span className="text-sm">{profile.sleepSchedule}</span>
+          </div>
+          <div className="flex items-center">
+            <Home className="h-4 w-4 mr-2 text-roomify-purple" />
+            <span className="text-sm">{profile.cleanliness}</span>
+          </div>
+          <div className="flex items-center">
+            <Briefcase className="h-4 w-4 mr-2 text-roomify-purple" />
+            <span className="text-sm">{profile.workSchedule}</span>
+          </div>
+          <div className="flex items-center">
+            <Utensils className="h-4 w-4 mr-2 text-roomify-purple" />
+            <span className="text-sm">{profile.dietPreference}</span>
+          </div>
+          <div className="flex items-center">
+            <Activity className="h-4 w-4 mr-2 text-roomify-purple" />
+            <span className="text-sm">Interests</span>
+          </div>
         </div>
         
-        <p className="text-gray-600 dark:text-gray-400 line-clamp-2">{profile.bio}</p>
-        
-        <div className="flex flex-wrap gap-2">
-          {lifestyleTags.map((tag, index) => (
-            <Badge key={index} variant="outline" className="bg-roomify-gray-light text-gray-800">
-              {tag}
+        <div className="mt-3 flex flex-wrap gap-1">
+          {profile.interests.split(', ').map((interest, index) => (
+            <Badge key={index} variant="secondary" className="bg-roomify-purple/10 text-roomify-purple hover:bg-roomify-purple/20">
+              {interest}
             </Badge>
           ))}
         </div>
       </CardContent>
+      
+      <CardFooter className="p-4 flex justify-between">
+        <Button 
+          onClick={onReject}
+          className="rounded-full w-14 h-14 bg-white hover:bg-red-50 border border-gray-200 shadow-lg"
+        >
+          <X className="h-8 w-8 text-red-500" />
+        </Button>
+        
+        <Button
+          onClick={() => setShowDetails(!showDetails)}
+          className="rounded-full w-10 h-10 bg-gray-100 hover:bg-gray-200 border border-gray-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500">
+            {showDetails 
+              ? <polyline points="18 15 12 9 6 15"></polyline>
+              : <polyline points="6 9 12 15 18 9"></polyline>
+            }
+          </svg>
+        </Button>
+        
+        <Button
+          onClick={onLike}
+          className="rounded-full w-14 h-14 bg-white hover:bg-green-50 border border-gray-200 shadow-lg"
+        >
+          <Heart className="h-8 w-8 text-green-500" />
+        </Button>
+      </CardFooter>
     </Card>
   );
 };

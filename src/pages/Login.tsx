@@ -1,51 +1,29 @@
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import LoginForm from '@/components/auth/LoginForm';
-import { toast } from '@/components/ui/use-toast';
+import { useAuth } from '@/context/AuthContext';
 
 const Login: React.FC = () => {
-  const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
 
   const handleLogin = (email: string, password: string) => {
-    // In a real app, this would call an API
-    console.log('Login:', { email, password });
-    
-    toast({
-      title: "Login successful",
-      description: "Welcome back to Roomify!"
-    });
-    
-    navigate('/dashboard');
+    login(email, password);
   };
 
   const handleGoogleLogin = () => {
     // In a real app, this would integrate with Google OAuth
-    console.log('Google login');
-    
-    toast({
-      title: "Login successful",
-      description: "Welcome back to Roomify!"
-    });
-    
-    navigate('/dashboard');
+    login('demo@roomify.com', 'password123');
   };
 
   const handleFacebookLogin = () => {
     // In a real app, this would integrate with Facebook OAuth
-    console.log('Facebook login');
-    
-    toast({
-      title: "Login successful",
-      description: "Welcome back to Roomify!"
-    });
-    
-    navigate('/dashboard');
+    login('demo@roomify.com', 'password123');
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 p-4">
+      <div className="max-w-md w-full mx-auto mt-10">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-roomify-purple">Roomify</h1>
           <p className="text-gray-600 mt-2">Find your perfect roommate match</p>
@@ -56,6 +34,15 @@ const Login: React.FC = () => {
           onGoogleLogin={handleGoogleLogin}
           onFacebookLogin={handleFacebookLogin}
         />
+        
+        <div className="mt-8 text-center">
+          <Link 
+            to="/how-it-works"
+            className="text-roomify-purple hover:text-roomify-purple-dark underline"
+          >
+            Learn how Roomify works
+          </Link>
+        </div>
       </div>
     </div>
   );

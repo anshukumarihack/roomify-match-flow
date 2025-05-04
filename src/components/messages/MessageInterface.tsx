@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Send, Paperclip, Mic } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 interface Message {
   id: string;
@@ -12,12 +13,12 @@ interface Message {
   timestamp: Date;
 }
 
-// Mock user data
+// Mock match data
 const mockMatchData = {
   '1': {
     id: '1',
     name: 'Emma Wilson',
-    photoUrl: 'https://source.unsplash.com/random/200x200?portrait&woman&1',
+    photoUrl: 'https://i.pravatar.cc/300?u=emma-wilson',
     messages: [
       { id: '1', sender: 'match', content: "Hi there! I saw your profile and I think we might be a good match for roommates.", timestamp: new Date(Date.now() - 86400000) },
       { id: '2', sender: 'user', content: "Hey Emma! Thanks for reaching out. I'm looking for someone who is clean and respectful.", timestamp: new Date(Date.now() - 82800000) },
@@ -29,7 +30,7 @@ const mockMatchData = {
   '2': {
     id: '2',
     name: 'James Rodriguez',
-    photoUrl: 'https://source.unsplash.com/random/200x200?portrait&man&2',
+    photoUrl: 'https://i.pravatar.cc/300?u=james-rodriguez',
     messages: [
       { id: '1', sender: 'match', content: "Hello! I think we'd make good roommates based on our profiles.", timestamp: new Date(Date.now() - 43200000) },
       { id: '2', sender: 'user', content: "Hi James, thanks for reaching out! What are your hobbies?", timestamp: new Date(Date.now() - 39600000) },
@@ -39,9 +40,28 @@ const mockMatchData = {
   '3': {
     id: '3',
     name: 'Sarah Chen',
-    photoUrl: 'https://source.unsplash.com/random/200x200?portrait&woman&3',
+    photoUrl: 'https://i.pravatar.cc/300?u=sarah-chen',
     messages: [
       { id: '1', sender: 'match', content: "Hey! Just matched with you and thought I'd say hi!", timestamp: new Date(Date.now() - 1800000) }
+    ]
+  },
+  '4': {
+    id: '4',
+    name: 'Michael Johnson',
+    photoUrl: 'https://i.pravatar.cc/300?u=michael-johnson',
+    messages: [
+      { id: '1', sender: 'match', content: "Hello! I'm interested in finding a place in the downtown area.", timestamp: new Date(Date.now() - 86400000) },
+      { id: '2', sender: 'user', content: "Hi Michael, I'm also looking downtown. What's your budget?", timestamp: new Date(Date.now() - 85000000) }
+    ]
+  },
+  '5': {
+    id: '5',
+    name: 'Sophia Garcia',
+    photoUrl: 'https://i.pravatar.cc/300?u=sophia-garcia',
+    messages: [
+      { id: '1', sender: 'match', content: "Hi! I noticed we have similar preferences for a living space.", timestamp: new Date(Date.now() - 150000000) },
+      { id: '2', sender: 'user', content: "Hey Sophia! Yes, I'm looking for a quiet place with good amenities.", timestamp: new Date(Date.now() - 149000000) },
+      { id: '3', sender: 'match', content: "Me too! I'm also looking for a place with good public transportation access.", timestamp: new Date(Date.now() - 148000000) }
     ]
   }
 } as Record<string, {
@@ -54,6 +74,7 @@ const mockMatchData = {
 const MessageInterface: React.FC = () => {
   const { matchId } = useParams<{ matchId: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [messageText, setMessageText] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [matchData, setMatchData] = useState({ name: '', photoUrl: '' });
@@ -69,7 +90,7 @@ const MessageInterface: React.FC = () => {
         photoUrl: mockMatchData[matchId].photoUrl
       });
     } else {
-      navigate('/matches');
+      navigate('/messages');
     }
   }, [matchId, navigate]);
   
@@ -139,27 +160,8 @@ const MessageInterface: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen">
-      {/* Header */}
-      <div className="flex items-center p-4 border-b">
-        <Button variant="ghost" className="mr-2" onClick={() => navigate('/messages')}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div className="flex items-center">
-          <img 
-            src={matchData.photoUrl} 
-            alt={matchData.name}
-            className="h-10 w-10 rounded-full object-cover mr-3"
-          />
-          <div>
-            <h2 className="font-semibold">{matchData.name}</h2>
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-              <span className="text-xs text-gray-500">Online</span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="flex flex-col h-screen pt-14">
+      {/* Header handled by AppLayout now */}
       
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900">

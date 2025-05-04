@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 
 // Import our pages and layouts
@@ -21,40 +21,42 @@ import AboutPage from "./pages/AboutPage";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import SettingsPage from "./pages/SettingsPage";
 import AppLayout from "./layouts/AppLayout";
+import AuthProvider from "./context/AuthContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/create-profile" element={<ProfileCreationPage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/how-it-works" element={<HowItWorksPage />} />
-          
-          {/* Protected routes with AppLayout */}
-          <Route path="/" element={<AppLayout />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/swipe" element={<SwipePage />} />
-            <Route path="/badges" element={<BadgesPage />} />
-            <Route path="/activity" element={<DashboardPage />} />
-            <Route path="/matches" element={<MatchesPage />} />
-            <Route path="/messages" element={<MessagesPage />} />
-            <Route path="/messages/:matchId" element={<MessageDetailPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-          </Route>
-          
-          {/* Catch all route */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/create-profile" element={<ProfileCreationPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/how-it-works" element={<HowItWorksPage />} />
+            
+            {/* Protected routes with AppLayout */}
+            <Route path="/" element={<AppLayout />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/swipe" element={<SwipePage />} />
+              <Route path="/badges" element={<BadgesPage />} />
+              <Route path="/matches" element={<MatchesPage />} />
+              <Route path="/messages" element={<MessagesPage />} />
+              <Route path="/messages/:matchId" element={<MessageDetailPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+            </Route>
+            
+            {/* Catch all route */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

@@ -1,20 +1,20 @@
 
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Users, Calendar, Badge, MessageCircle, User, Settings, Heart, Activity } from "lucide-react";
+import { Home, Users, Badge, MessageCircle, User, Settings, Heart } from "lucide-react";
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/context/AuthContext';
 
 const NavBar = () => {
   const location = useLocation();
+  const { user } = useAuth();
   
   const navItems = [
     { icon: <Home className="w-6 h-6" />, path: '/dashboard', label: 'Home' },
     { icon: <Users className="w-6 h-6" />, path: '/swipe', label: 'Match' },
     { icon: <Heart className="w-6 h-6" />, path: '/matches', label: 'Matches' },
     { icon: <Badge className="w-6 h-6" />, path: '/badges', label: 'Badges' },
-    { icon: <Activity className="w-6 h-6" />, path: '/activity', label: 'Activity' },
     { icon: <MessageCircle className="w-6 h-6" />, path: '/messages', label: 'Messages' },
-    { icon: <User className="w-6 h-6" />, path: '/create-profile', label: 'Profile' },
     { icon: <Settings className="w-6 h-6" />, path: '/settings', label: 'Settings' },
   ];
 
